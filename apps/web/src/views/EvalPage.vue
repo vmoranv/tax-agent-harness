@@ -166,6 +166,62 @@
         </v-col>
       </v-row>
 
+      <!-- 规则检索效果（真实 IR 指标，确定性检索 / 非向量） -->
+      <v-card variant="outlined" class="pa-4 mb-4" style="border-radius: var(--panel-border-radius)">
+        <div class="d-flex align-center justify-space-between flex-wrap ga-1 mb-1">
+          <div class="text-subtitle-2 font-weight-bold d-flex align-center ga-2">
+            <v-icon size="18" color="primary">mdi-text-search</v-icon>
+            规则检索效果（Retrieval · 确定性检索 / 非向量 IR）
+          </div>
+          <v-chip size="x-small" variant="outlined" color="info">被测：真实 selectApplicableRules</v-chip>
+        </div>
+        <div class="text-caption text-medium-emphasis mb-3">
+          对真实规则选择器注入候选规则，按独立 gold 集合计算 TP/FP/FN；与「内部 7 维雷达」的 PASS 通过率不同，这是集合检索质量指标。
+        </div>
+        <template v-if="report.retrieval?.available && report.retrieval.macro">
+          <div class="d-flex flex-wrap ga-2 mb-3">
+            <v-chip v-for="m in retrievalCards" :key="m.label" variant="tonal" :color="m.color" size="small" class="font-weight-medium tabular-nums">
+              {{ m.label }} {{ m.value }}
+            </v-chip>
+          </div>
+          <v-table density="compact" class="text-caption">
+            <thead>
+              <tr>
+                <th class="text-left">查询</th>
+                <th class="text-left">gold（应检索）</th>
+                <th class="text-left">retrieved（实检索）</th>
+                <th class="text-center">P</th>
+                <th class="text-center">R</th>
+                <th class="text-center">F1</th>
+                <th class="text-center">版本一致</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="q in report.retrieval.queries" :key="q.enterprise + q.month">
+                <td class="tabular-nums font-weight-medium">{{ q.enterprise }}/{{ q.month }}</td>
+                <td class="tabular-nums">{{ q.gold.join(', ') }}</td>
+                <td class="tabular-nums">{{ q.retrieved.join(', ') }}</td>
+                <td class="text-center tabular-nums">{{ (q.precision * 100).toFixed(0) }}%</td>
+                <td class="text-center tabular-nums">{{ (q.recall * 100).toFixed(0) }}%</td>
+                <td class="text-center tabular-nums">{{ (q.f1 * 100).toFixed(0) }}%</td>
+                <td class="text-center">
+                  <v-icon size="14" :color="q.versionExact ? 'success' : 'error'">
+                    {{ q.versionExact ? 'mdi-check' : 'mdi-close' }}
+                  </v-icon>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+          <div class="text-caption text-disabled mt-2 tabular-nums">
+            {{ report.retrieval.macro.queryCount }} 查询 × {{ report.retrieval.macro.candidateCount }} 候选规则 ·
+            micro TP={{ report.retrieval.macro.micro.tp }} FP={{ report.retrieval.macro.micro.fp }} FN={{ report.retrieval.macro.micro.fn }}
+          </div>
+        </template>
+        <v-alert v-else type="warning" variant="tonal" density="compact" class="text-caption">
+          检索指标未计算：{{ report.retrieval?.reason ?? '后端未提供' }}
+        </v-alert>
+      </v-card>
+
       <!-- L1-L7 分层条形 -->
       <v-card variant="outlined" class="pa-4 mb-4" style="border-radius: var(--panel-border-radius)">
         <div class="text-subtitle-2 font-weight-bold d-flex align-center ga-2 mb-1">
@@ -384,6 +440,19 @@ const metricCards = computed(() => {
       icon: 'mdi-radar',
       color: 'rgb(var(--v-theme-secondary))',
     },
+  ];
+});
+
+/** 检索效果 4 个指标 chip（确定性检索 IR 指标）。 */
+const retrievalCards = computed(() => {
+  const m = report.value?.retrieval?.macro;
+  if (!m) return [];
+  const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
+  return [
+    { label: 'Precision', value: pct(m.precision), color: 'primary' },
+    { label: 'Recall', value: pct(m.recall), color: 'info' },
+    { label: 'F1', value: pct(m.f1), color: 'success' },
+    { label: '版本命中率', value: pct(m.versionHitRate), color: 'warning' },
   ];
 });
 

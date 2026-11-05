@@ -42,6 +42,34 @@ interface EvalReport {
       health: string;
     }
   >;
+  /** 真实 IR 检索指标（确定性规则检索，非向量）。 */
+  retrieval: {
+    available: boolean;
+    reason?: string;
+    macro: {
+      precision: number;
+      recall: number;
+      f1: number;
+      versionHitRate: number;
+      queryCount: number;
+      candidateCount: number;
+      micro: { precision: number; recall: number; f1: number; tp: number; fp: number; fn: number };
+    } | null;
+    queries: Array<{
+      enterprise: string;
+      month: string;
+      gold: string[];
+      retrieved: string[];
+      tp: number;
+      fp: number;
+      fn: number;
+      precision: number;
+      recall: number;
+      f1: number;
+      versionExact: boolean;
+    }>;
+    generatedAt?: string;
+  };
   results: Array<{
     layer: string;
     id: string;

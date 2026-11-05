@@ -455,6 +455,36 @@ export interface EvalCaseResult {
   failures: string[];
   dimensions: string[];
 }
+/** 规则检索效果（确定性检索 IR 指标，非向量）。 */
+export interface EvalRetrievalQuery {
+  enterprise: string;
+  month: string;
+  gold: string[];
+  retrieved: string[];
+  tp: number;
+  fp: number;
+  fn: number;
+  precision: number;
+  recall: number;
+  f1: number;
+  versionExact: boolean;
+}
+
+export interface EvalRetrievalMetrics {
+  available: boolean;
+  reason?: string;
+  macro: {
+    precision: number;
+    recall: number;
+    f1: number;
+    versionHitRate: number;
+    queryCount: number;
+    candidateCount: number;
+    micro: { precision: number; recall: number; f1: number; tp: number; fp: number; fn: number };
+  } | null;
+  queries: EvalRetrievalQuery[];
+  generatedAt?: string;
+}
 
 export interface EvalReport {
   officialDimensions: EvalOfficialDimension[];
@@ -464,6 +494,7 @@ export interface EvalReport {
   byStatus: Record<string, number>;
   byLayer: Record<string, EvalLayer>;
   dimensions: Record<string, EvalDimension>;
+  retrieval: EvalRetrievalMetrics;
   results: EvalCaseResult[];
 }
 

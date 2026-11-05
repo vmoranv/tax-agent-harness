@@ -52,9 +52,11 @@ const DIMENSION_DEFINITIONS = {
     desc: '端到端业务任务完成、短答案精准比对、最终数据库与实体状态匹配',
     target: 0.95,
   },
+  // 注意：这是「用例 PASS 通过率」的内部工程维度，不是 IR 检索指标。
+  // 真实 Precision/Recall/F1 见 run-eval.mjs 的 summary.retrieval（独立 IR 段落）。
   retrieval: {
-    name: 'RAG检索 (RAG Retrieval)',
-    desc: '适用规则检索/过滤 (Recall/Precision)、版本选择决策、排除停用与跨企业规则',
+    name: '规则过滤与版本决策（用例通过率）',
+    desc: '相关评测用例（规则过滤/版本选择/排除停用与跨企业）的 PASS 占比；非 IR 检索指标，真实 P/R/F1 见「规则检索效果」段',
     target: 0.9,
   },
   grounding: {

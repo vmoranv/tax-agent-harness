@@ -46,6 +46,7 @@ import {
   ROOT,
   summarize,
 } from './lib.mjs';
+import { computeRetrievalMetrics } from './retrieval-metrics.mjs';
 
 const args = process.argv.slice(2);
 const layerArg = args.find((a) => a.startsWith('--layer='))?.split('=')[1];
@@ -349,6 +350,9 @@ for (const [layer, def] of Object.entries(EXECUTABLE)) {
 /* -------------------------------- 输出与报告 -------------------------------- */
 const dimensionsSummary = aggregateDimensions(results);
 
+/** 真实 IR 检索指标（确定性规则检索，非向量）：Precision/Recall/F1/版本命中率。 */
+const retrieval = await computeRetrievalMetrics();
+
 const summary = {
   /** 赛题官方评分维度（权重来自 01_参赛说明.docx），评测中台不替代评委评分。 */
   officialDimensions: OFFICIAL_DIMENSIONS,
@@ -374,6 +378,7 @@ const summary = {
     return acc;
   }, {}),
   dimensions: dimensionsSummary,
+  retrieval,
   results,
 };
 
@@ -432,9 +437,42 @@ if (asJson) {
     );
   }
   lines.push('');
+  lines.push('## 三、规则检索效果 (Retrieval · 确定性检索，非向量 IR)');
+  lines.push('');
+  if (!retrieval.available) {
+    lines.push(`> 未计算：${retrieval.reason}`);
+  } else {
+    const m = retrieval.macro;
+    lines.push('| 指标 | 值 | 说明 |');
+    lines.push('|---|---|---|');
+    lines.push(
+      `| Precision (macro) | ${(m.precision * 100).toFixed(1)}% | 检索结果中相关规则占比 |`,
+    );
+    lines.push(`| Recall (macro) | ${(m.recall * 100).toFixed(1)}% | 应检索规则被找回占比 |`);
+    lines.push(`| F1 (macro) | ${(m.f1 * 100).toFixed(1)}% | P/R 调和平均 |`);
+    lines.push(
+      `| 版本命中率 | ${(m.versionHitRate * 100).toFixed(1)}% | selected 集合与 gold 完全一致（含版本）的查询占比 |`,
+    );
+    lines.push(
+      `| F1 (micro) | ${(m.micro.f1 * 100).toFixed(1)}% | 汇总 TP=${m.micro.tp} FP=${m.micro.fp} FN=${m.micro.fn} |`,
+    );
+    lines.push('');
+    lines.push(
+      `> ${m.queryCount} 个查询（2 企业 × 3 月份）× ${m.candidateCount} 条候选规则；被测 = 真实 \`selectApplicableRules\`，gold 独立硬编码。`,
+    );
+    lines.push('');
+    lines.push('| 查询 | gold | retrieved | P | R | F1 | 版本完全一致 |');
+    lines.push('|---|---|---|---|---|---|---|');
+    for (const q of retrieval.queries) {
+      lines.push(
+        `| ${q.enterprise}/${q.month} | ${q.gold.join(', ')} | ${q.retrieved.join(', ')} | ${(q.precision * 100).toFixed(0)}% | ${(q.recall * 100).toFixed(0)}% | ${(q.f1 * 100).toFixed(0)}% | ${q.versionExact ? '✅' : '❌'} |`,
+      );
+    }
+  }
+  lines.push('');
   const failed = results.filter((r) => r.status === 'FAIL');
   if (failed.length > 0) {
-    lines.push('## 三、失败用例详情');
+    lines.push('## 四、失败用例详情');
     lines.push('');
     for (const f of failed) {
       lines.push(`### ${f.id} · ${f.title}`);
@@ -487,6 +525,22 @@ if (asJson) {
             : '⚠️ DEGRADED';
     process.stdout.write(
       `  ${tag.padEnd(12)} [${rate}] (通过${String(d.pass).padStart(3)}/去重${String(d.uniqueCases).padStart(3)}/标记${String(d.taggedCount).padStart(3)})  ${d.name}\n`,
+    );
+  }
+
+  process.stdout.write('\n规则检索效果 (Retrieval · 确定性检索 / 非向量 IR)：\n');
+  if (!retrieval.available) {
+    process.stdout.write(`  · 未计算：${retrieval.reason}\n`);
+  } else {
+    const m = retrieval.macro;
+    const pct = (x) => `${(x * 100).toFixed(1)}%`.padStart(6);
+    process.stdout.write(
+      `  Precision ${pct(m.precision)}  Recall ${pct(m.recall)}  F1 ${pct(m.f1)}  ` +
+        `版本命中率 ${pct(m.versionHitRate)}  (micro F1 ${pct(m.micro.f1)}, ` +
+        `TP=${m.micro.tp} FP=${m.micro.fp} FN=${m.micro.fn})\n`,
+    );
+    process.stdout.write(
+      `  · ${m.queryCount} 查询 × ${m.candidateCount} 候选规则；被测 = 真实 selectApplicableRules，gold 独立硬编码\n`,
     );
   }
 
