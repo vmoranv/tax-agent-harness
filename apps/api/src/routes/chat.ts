@@ -99,7 +99,7 @@ export async function chatRoutes(app: FastifyInstance): Promise<void> {
 
     try {
       const result = await runtime.harness.handle(event, runtime.platforms.get('api'));
-      const detail = readTrace(runtime, result.runId);
+      const detail = await readTrace(runtime, result.runId);
       return reply.send({
         runId: result.runId,
         text: result.text,
@@ -340,19 +340,12 @@ async function executeTool(
   }
 }
 
-function readTrace(
+/** 复用 TraceSink 端口读取本轮 trace，去掉直接读 trace_run.payload 的第二条路径。 */
+async function readTrace(
   runtime: Runtime,
   runId: string,
-): { toolCalls: unknown[]; provenance: unknown[] } | null {
-  const db = (
-    runtime as unknown as {
-      db: { prepare: (sql: string) => { get: (...args: unknown[]) => unknown } };
-    }
-  ).db;
-  const row = db.prepare('SELECT payload FROM trace_run WHERE run_id = ?').get(runId) as
-    | { payload: string }
-    | undefined;
-  if (row === undefined) return null;
-  const t = JSON.parse(row.payload) as { toolCalls: unknown[]; provenance: unknown[] };
-  return { toolCalls: t.toolCalls ?? [], provenance: t.provenance ?? [] };
+): Promise<{ toolCalls: readonly unknown[]; provenance: readonly unknown[] } | null> {
+  const run = await runtime.traceSink.get(runId);
+  if (run === null) return null;
+  return { toolCalls: run.toolCalls ?? [], provenance: run.provenance ?? [] };
 }

@@ -56,6 +56,8 @@ export interface TraceRunSnapshot {
   readonly provenance: readonly ProvenanceRecordDto[];
   /** 真实模型 token 消耗（来自 AI SDK totalUsage，非启发式估算）。 */
   readonly usage: { inputTokens: number; outputTokens: number };
+  /** step 数超 MAX_STEPS 被截断时为 true。 */
+  readonly stepsTruncated: boolean;
   readonly finalText: string;
   readonly error: { code: string; message: string } | null;
 }
@@ -89,6 +91,7 @@ export class TraceRun {
     inputTokens: 0,
     outputTokens: 0,
   };
+  private stepsTruncated = false;
 
   constructor(
     readonly runId: string,
@@ -123,7 +126,10 @@ export class TraceRun {
 
   /** 追加一步。超过上限后丢弃并标记截断。 */
   record(kind: StepKind, payload: unknown): void {
-    if (this.steps.length >= MAX_STEPS) return;
+    if (this.steps.length >= MAX_STEPS) {
+      this.stepsTruncated = true;
+      return;
+    }
     const now = Date.now();
     this.steps.push({
       index: this.steps.length,
@@ -225,6 +231,7 @@ export class TraceRun {
       toolCalls: this.tools,
       provenance: this.provenanceRows,
       usage: this.usageDto,
+      stepsTruncated: this.stepsTruncated,
       finalText: this.finalText,
       error: this.failure,
     };

@@ -105,6 +105,7 @@
             <v-divider class="my-3" />
             <div class="text-caption font-weight-medium text-medium-emphasis mb-1">
               执行流水（{{ detail.steps.length }}）
+              <span v-if="detail.stepsTruncated" class="text-warning">· ⚠️ step 数超上限，部分被截断</span>
             </div>
             <div class="d-flex flex-column ga-1">
               <div

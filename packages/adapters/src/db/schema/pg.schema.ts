@@ -5,7 +5,7 @@
  * 由契约测试保证。
  *
  * 规范化说明（详见 `docs/spec/14-industrial-refactor.md` §3）：
- * - 1NF：多值属性（企业别名、规则谓词、任务条目、trace 步骤）各自成表
+ * - 1NF：多值属性（企业别名、规则谓词、任务条目）各自成表
  * - 2NF：所有非键字段完整依赖复合主键
  * - 3NF：**不存 `issued_month`**，改用表达式索引，消除传递依赖
  */
@@ -14,11 +14,9 @@ import { sql } from 'drizzle-orm';
 import {
   bigint,
   bigserial,
-  boolean,
   date,
   index,
   integer,
-  jsonb,
   pgTable,
   primaryKey,
   text,
@@ -240,63 +238,6 @@ export const conversationMessage = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
   },
   (t) => [uniqueIndex('uq_message_seq').on(t.conversationId, t.seq)],
-);
-
-/* ---------------------------- 运行记录 ---------------------------- */
-
-export const traceRun = pgTable(
-  'trace_run',
-  {
-    runId: text('run_id').primaryKey(),
-    conversationId: text('conversation_id'),
-    userId: text('user_id'),
-    enterpriseId: text('enterprise_id'),
-    providerId: text('provider_id').notNull(),
-    modelId: text('model_id').notNull(),
-    startedAt: timestamp('started_at', { withTimezone: true }).notNull(),
-    finishedAt: timestamp('finished_at', { withTimezone: true }),
-    elapsedMs: integer('elapsed_ms'),
-    instructions: text('instructions'),
-    instructionsHash: text('instructions_hash'),
-    estimatedTokens: integer('estimated_tokens'),
-    degradeLevel: text('degrade_level'),
-    finalText: text('final_text'),
-    errorCode: text('error_code'),
-    errorMessage: text('error_message'),
-  },
-  (t) => [index('idx_trace_time').on(sql`${t.startedAt} DESC`)],
-);
-
-export const traceStep = pgTable(
-  'trace_step',
-  {
-    runId: text('run_id')
-      .notNull()
-      .references(() => traceRun.runId, { onDelete: 'cascade' }),
-    idx: integer('idx').notNull(),
-    kind: text('kind').notNull(),
-    at: timestamp('at', { withTimezone: true }).notNull(),
-    elapsedMs: integer('elapsed_ms').notNull(),
-    payload: jsonb('payload').notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.runId, t.idx] })],
-);
-
-export const traceToolCall = pgTable(
-  'trace_tool_call',
-  {
-    runId: text('run_id')
-      .notNull()
-      .references(() => traceRun.runId, { onDelete: 'cascade' }),
-    callId: text('call_id').notNull(),
-    name: text('name').notNull(),
-    args: jsonb('args').notNull(),
-    ok: boolean('ok').notNull(),
-    result: jsonb('result'),
-    errorCode: text('error_code'),
-    elapsedMs: integer('elapsed_ms').notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.runId, t.callId] })],
 );
 
 /* ---------------------------- 写日志 ---------------------------- */

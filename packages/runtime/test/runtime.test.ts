@@ -474,6 +474,16 @@ describe('运行记录', () => {
     const last = steps[steps.length - 1]!;
     expect(last.sinceStartMs).toBeGreaterThanOrEqual(last.elapsedMs);
   });
+
+  it('step 数超 MAX_STEPS 时标记 stepsTruncated 而非静默丢弃', () => {
+    const run = TraceRun.start({ runId: 'r-trunc', providerId: 'p', modelId: 'm' });
+    // MAX_STEPS=500；先确认未超限为 false
+    expect(run.snapshot().stepsTruncated).toBe(false);
+    for (let i = 0; i < 505; i += 1) run.record('context.assembled', { i });
+    const snap = run.snapshot();
+    expect(snap.stepsTruncated).toBe(true);
+    expect(snap.steps.length).toBe(500);
+  });
 });
 
 /* ========================= 脚本化端到端 ========================= */

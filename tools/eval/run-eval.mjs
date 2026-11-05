@@ -3,7 +3,7 @@
  * 财税 Agent Harness 评测中台统一执行引擎。
  *
  * 规范参考：
- * - 7大构建维度（结果、RAG检索、证据、Agent过程、异常、成本效率、安全权限）
+ * - 7大构建维度（结果、RAG检索、证据、Agent过程、异常、工程质量、安全权限）
  * - OpenAI Agent Evals (Traces, Graders, Datasets, Eval Runs)
  * - NVIDIA Agent Process Evaluation (step-level + outcome)
  * - Meta Agents Rule of Two (不可信输入、敏感系统、写操作边界)

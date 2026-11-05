@@ -8,7 +8,7 @@
  * 3. 证据 (Evidence & Grounding)
  * 4. Agent过程 (Agent Process / Trajectory)
  * 5. 不确定性/异常 (Uncertainty & Anomaly)
- * 6. 成本效率 (Cost & Efficiency)
+ * 6. 工程质量 (Engineering Quality，静态代码分类，非运行时成本)
  * 7. 安全权限 (Security & Permissions)
  */
 
@@ -75,8 +75,8 @@ const DIMENSION_DEFINITIONS = {
     target: 0.9,
   },
   efficiency: {
-    name: '成本效率 (Cost & Efficiency)',
-    desc: '架构分层依赖边界、零浮点与整数分性能、代码无冗余与重复率控制',
+    name: '工程质量 (Engineering Quality)',
+    desc: '静态工程分类：整数分无浮点、架构分层依赖边界(L7)、迁移与幂等、代码无冗余重复率控制。非运行时 token/延迟/成本度量（真实消耗见 trace_run，§8）',
     target: 0.9,
   },
   security: {
@@ -168,7 +168,7 @@ export function classifyDimensions(c) {
     dims.add('anomaly');
   }
 
-  // 6. 成本与工程效率
+  // 6. 工程质量（静态代码分类，非运行时成本）
   if (
     id.includes('MONEY') ||
     id.includes('L7') ||

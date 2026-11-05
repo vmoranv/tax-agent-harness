@@ -206,6 +206,8 @@ export interface TraceDetailDto {
   provenance: Array<{ literal: string; source: string; ok: boolean }>;
   /** 真实模型 token 消耗（AI SDK totalUsage）。 */
   usage: { inputTokens: number; outputTokens: number };
+  /** step 数超上限被截断。 */
+  stepsTruncated?: boolean;
   finalText: string;
   error: { code: string; message: string } | null;
 }

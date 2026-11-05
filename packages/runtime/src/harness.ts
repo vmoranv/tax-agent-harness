@@ -178,11 +178,12 @@ export class Harness {
       event.getExtra<Array<{ role: 'user' | 'assistant'; content: string }>>('history') ?? [];
     const history = persistedHistory.length > 0 ? persistedHistory : eventHistory;
 
+    const accessLevel =
+      event.getExtra<'read-write' | 'read-only' | 'none'>('accessLevel') ?? 'read-only';
     const ctx = assembleStage({
       recalled,
       enterpriseName: event.getExtra<string>('enterpriseName') ?? event.enterpriseId,
-      accessLevel:
-        event.getExtra<'read-write' | 'read-only' | 'none'>('accessLevel') ?? 'read-only',
+      accessLevel,
       history,
       toolNames: this.tools.map((t) => t.name),
       budgetTokens: this.deps.budgetTokens ?? 12_000,
@@ -201,7 +202,7 @@ export class Harness {
       instructionsHash: ctx.instructionsHash,
       userId: event.userId,
       enterpriseId: event.enterpriseId,
-      accessLevel: 'read-write',
+      accessLevel,
       memory: {
         taskCardId:
           recalled.memory === null
