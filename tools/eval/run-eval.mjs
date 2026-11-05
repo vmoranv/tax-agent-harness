@@ -481,12 +481,16 @@ if (asJson) {
   }
   lines.push('');
 
-  // 四、向量检索 IR 基线（真实可复算的余弦分数）
-  lines.push('## 四、向量检索基线 (Vector IR · 本地确定性哈希嵌入 + 余弦)');
+  // 四、向量检索「诊断对照值」（明确非评分）
+  lines.push('## 四、向量检索诊断对照（⚠️ 非评分 · 本地哈希嵌入玩具实验）');
   lines.push('');
+  lines.push('> **本节的 P/R/F1 不是可信的向量化分数**，不得用于衡量检索质量或横向比较。');
   lines.push(`> ${vector.disclaimer}`);
+  lines.push(
+    '> 方法学缺陷：查询文本含 gold title（label leak）、R002 v1/v2 向量逐位相同（版本不可分）、查询串增删无关字符分数在 0.58~1.00 间跳变（不稳健）。',
+  );
   lines.push('');
-  lines.push('| 指标 | 值 |');
+  lines.push('| 指标（诊断值，无质量含义） | 值 |');
   lines.push('|---|---|');
   lines.push(`| Precision (macro) | ${(vector.macro.precision * 100).toFixed(1)}% |`);
   lines.push(`| Recall (macro) | ${(vector.macro.recall * 100).toFixed(1)}% |`);
@@ -601,15 +605,16 @@ if (asJson) {
     );
   }
 
-  process.stdout.write(
-    '\n向量检索基线 (Vector IR · 本地哈希嵌入 + 余弦，非语义 embedding 模型)：\n',
-  );
+  process.stdout.write('\n向量检索诊断对照（⚠️ 非评分 · 哈希嵌入玩具实验，P/R/F1 无质量含义）：\n');
   {
     const m = vector.macro;
     const pct = (x) => `${(x * 100).toFixed(1)}%`.padStart(6);
     process.stdout.write(
       `  Precision ${pct(m.precision)}  Recall ${pct(m.recall)}  F1 ${pct(m.f1)}  ` +
         `top-K=${m.topK}  (${m.queryCount} 查询 × ${m.candidateCount} 候选规则)\n`,
+    );
+    process.stdout.write(
+      '  · 方法学缺陷：label leak / R002 v1-v2 向量相同(版本不可分) / 查询串微调分数在 0.58~1.00 跳变(不稳健)。\n',
     );
     process.stdout.write(`  · ${vector.disclaimer}\n`);
   }

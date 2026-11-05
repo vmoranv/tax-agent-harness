@@ -165,7 +165,7 @@ pnpm test                # 仅单元测试
 pnpm dep:check           # 仅架构依赖检查
 pnpm eval                # 评测中台：244 例 L1–L7 + 黄金集 50 条 + 集合/向量 IR 指标（统一报告，门禁内）
 pnpm eval:cov            # 仅覆盖率门禁（REQ 18/18，INV 22/22）
-pnpm eval:report         # 生成 Markdown 报告（含黄金集 / 向量检索基线）
+pnpm eval:report         # 生成 Markdown 报告（含黄金集 / 向量检索诊断对照）
 pnpm eval:golden         # 单独跑黄金集（50 条，retrieval/answer 分开计分）
 pnpm eval:semantic:live  # 真模型语义评测（LLM 参与评分，需 apikey + 服务；不进 verify / CI）
 pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
@@ -186,11 +186,11 @@ pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 | 中台内嵌能力 | 说明 | 运行方式 |
 |---|---|---|
 | 集合 IR 指标 | 确定性 `selectApplicableRules` 的 Precision/Recall/F1（P/R/F1 = 100%），非向量 | `pnpm eval` 报告「三」 |
-| 向量检索基线 | 本地确定性哈希嵌入 + 余弦 top-K 的 IR 分数（macro P/R/F1 ≈ 58.3%）；**非语义 embedding 模型**，仅为可复算的向量化基线分数 | `pnpm eval` 报告「四」 |
+| 向量检索诊断对照 | 本地确定性哈希嵌入 + 余弦 top-K 的 **P/R/F1 ≈ 58.3%（⚠️ 非评分）**：label leak、版本不可分、不稳健，无质量含义，仅作「若换向量检索会怎样」的结构诊断 | `pnpm eval` 报告「四」 |
 | 真模型语义评测（L6） | **LLM 参与决策与评分**：真实 `agnes-2.5-flash` 跑 4 条语义变体（换措辞/追问/指代），机器断言判分；结果非确定性、需 apikey/服务 | `pnpm eval:semantic:live`（独立，**不进 verify / CI**）|
 
 > 诚实边界：`pnpm eval` / `pnpm eval:golden` 都是**确定性管线**，不调用真 LLM；
-> 向量化分数是本地哈希嵌入基线，**不是**接入 OpenAI/Gemini embedding 服务；
+> 向量诊断值 ≈58.3% **不是可信评分**（本地哈希玩具实验，三处方法学缺陷，见报告「四」）；
 > 真正「LLM 参与评分」的是 `pnpm eval:semantic:live`（真模型、结果非确定性：2026-11-05 两次实跑分别 4/4、3/4，均过 ≥75% 阈值）。
 > 线上规则检索仍是确定性三重过滤（5 条规则规模，无向量库）。
 
@@ -208,8 +208,10 @@ pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 
 ### 评测集是什么
 
-`pnpm eval` 跑的不是「文档里的清单」，而是评测中台的 **244 条评测用例**
-（分 L1–L7 七层），其中自动执行 **240 例 PASS**、人工执行 **4 例 MANUAL**：
+`pnpm eval` 跑的不是「文档里的清单」，而是评测中台的 **244 条评测用例**（编号 L1–L7）。
+**但严格说不是「7 层都自动评测」**：L1–L5 + L7 共 **6 层自动执行（240 例 PASS）**；
+**L6 是 1 层手工占位层**（4 例 `kind:'manual'` 被中台短路为 MANUAL，从不自动执行，
+`run:null`、无机器断言）。真正的 L6 真模型语义评分在 `pnpm eval:semantic:live`。
 
 | 层 | 用例 | 状态 | 说明 |
 |---|---|---|---|
@@ -218,8 +220,8 @@ pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 | L3 适配器 | 35 | ✅ 35 PASS | SQLite、Excel 导入、银行只读触发器 |
 | L4 运行时 | 26 | ✅ 26 PASS | Pipeline 洋葱、工具 schema、回复防护 |
 | L5 端到端 | 35 | ✅ 35 PASS | 假模型剧本 + 数据库状态断言 |
-| L6 真模型 | 4 | 👤 4 MANUAL | 手工执行，验证模型理解能力 |
-| L7 架构 | 8 | ✅ 8 PASS | 依赖方向与分层边界 |
+| L6 真模型 | 4 | 👤 4 MANUAL | **占位层，中台不自动执行**（`run:null`、无机器断言）；真模型语义评分见 `pnpm eval:semantic:live` |
+| L7 架构 | 8 | ✅ 8 PASS | 真跑 depcruise + 源码扫描（注入违规会 FAIL）；7 个独立规则 + 1 条重复 |
 
 `MANUAL`（只有文字描述、无自动断言）不进 CI 阻塞流水线，也不计入自动通过数；
 `UNVERIFIED`（无断言）会阻断构建——不允许「没验证」伪装成「验证过了」。
