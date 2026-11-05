@@ -1,5 +1,5 @@
 {
-  "dataset_version": "semantic-2026-11-05",
+  "dataset_version": "semantic-2026-11-05-v2",
   "generated_from": "fixtures/eval/dataset.source.json + rules.json + actors.json（lib.mjs 独立重算）",
   "source_note": "程序化生成的真模型语义变体集；gold 独立重算、判据机器可判写死在 runner，非挑题凑分、非复用公开 benchmark。",
   "total": 26,
@@ -23,8 +23,8 @@
     {
       "id": "S-01",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业8 月·模板1",
-      "text": "甲企业8 月的发票一共多少钱？",
+      "label": "换措辞查金额·甲企业2026 年 8 月·模板1",
+      "text": "甲企业 2026 年 8 月的发票一共多少钱？",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -37,8 +37,8 @@
     {
       "id": "S-02",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业8 月·模板2",
-      "text": "帮我看下甲企业 8 月 的票面合计",
+      "label": "换措辞查金额·甲企业2026 年 8 月·模板2",
+      "text": "帮我查一下甲企业 2026 年 8 月的票面金额合计",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -51,8 +51,8 @@
     {
       "id": "S-03",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业8 月·模板3",
-      "text": "甲企业在 8 月 开的所有发票价税合计是多少",
+      "label": "换措辞查金额·甲企业2026 年 8 月·模板3",
+      "text": "甲企业 2026 年 8 月开的所有发票，价税合计是多少？",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -65,8 +65,8 @@
     {
       "id": "S-04",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业8 月·模板4",
-      "text": "统计一下甲企业8 月的发票总金额",
+      "label": "换措辞查金额·甲企业2026 年 8 月·模板4",
+      "text": "请统计甲企业 2026 年 8 月的发票总金额",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -79,8 +79,8 @@
     {
       "id": "S-05",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业9 月·模板1",
-      "text": "甲企业9 月的发票一共多少钱？",
+      "label": "换措辞查金额·甲企业2026 年 9 月·模板1",
+      "text": "甲企业 2026 年 9 月的发票一共多少钱？",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -93,8 +93,8 @@
     {
       "id": "S-06",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业9 月·模板2",
-      "text": "帮我看下甲企业 9 月 的票面合计",
+      "label": "换措辞查金额·甲企业2026 年 9 月·模板2",
+      "text": "帮我查一下甲企业 2026 年 9 月的票面金额合计",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -107,8 +107,8 @@
     {
       "id": "S-07",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业9 月·模板3",
-      "text": "甲企业在 9 月 开的所有发票价税合计是多少",
+      "label": "换措辞查金额·甲企业2026 年 9 月·模板3",
+      "text": "甲企业 2026 年 9 月开的所有发票，价税合计是多少？",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -121,8 +121,8 @@
     {
       "id": "S-08",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·甲企业9 月·模板4",
-      "text": "统计一下甲企业9 月的发票总金额",
+      "label": "换措辞查金额·甲企业2026 年 9 月·模板4",
+      "text": "请统计甲企业 2026 年 9 月的发票总金额",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -135,8 +135,8 @@
     {
       "id": "S-09",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业8 月·模板1",
-      "text": "乙企业8 月的发票一共多少钱？",
+      "label": "换措辞查金额·乙企业2026 年 8 月·模板1",
+      "text": "乙企业 2026 年 8 月的发票一共多少钱？",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -149,8 +149,8 @@
     {
       "id": "S-10",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业8 月·模板2",
-      "text": "帮我看下乙企业 8 月 的票面合计",
+      "label": "换措辞查金额·乙企业2026 年 8 月·模板2",
+      "text": "帮我查一下乙企业 2026 年 8 月的票面金额合计",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -163,8 +163,8 @@
     {
       "id": "S-11",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业8 月·模板3",
-      "text": "乙企业在 8 月 开的所有发票价税合计是多少",
+      "label": "换措辞查金额·乙企业2026 年 8 月·模板3",
+      "text": "乙企业 2026 年 8 月开的所有发票，价税合计是多少？",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -177,8 +177,8 @@
     {
       "id": "S-12",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业8 月·模板4",
-      "text": "统计一下乙企业8 月的发票总金额",
+      "label": "换措辞查金额·乙企业2026 年 8 月·模板4",
+      "text": "请统计乙企业 2026 年 8 月的发票总金额",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -191,8 +191,8 @@
     {
       "id": "S-13",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业9 月·模板1",
-      "text": "乙企业9 月的发票一共多少钱？",
+      "label": "换措辞查金额·乙企业2026 年 9 月·模板1",
+      "text": "乙企业 2026 年 9 月的发票一共多少钱？",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -205,8 +205,8 @@
     {
       "id": "S-14",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业9 月·模板2",
-      "text": "帮我看下乙企业 9 月 的票面合计",
+      "label": "换措辞查金额·乙企业2026 年 9 月·模板2",
+      "text": "帮我查一下乙企业 2026 年 9 月的票面金额合计",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -219,8 +219,8 @@
     {
       "id": "S-15",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业9 月·模板3",
-      "text": "乙企业在 9 月 开的所有发票价税合计是多少",
+      "label": "换措辞查金额·乙企业2026 年 9 月·模板3",
+      "text": "乙企业 2026 年 9 月开的所有发票，价税合计是多少？",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -233,8 +233,8 @@
     {
       "id": "S-16",
       "slice": "amount-paraphrase",
-      "label": "换措辞查金额·乙企业9 月·模板4",
-      "text": "统计一下乙企业9 月的发票总金额",
+      "label": "换措辞查金额·乙企业2026 年 9 月·模板4",
+      "text": "请统计乙企业 2026 年 9 月的发票总金额",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -247,8 +247,7 @@
     {
       "id": "S-17",
       "slice": "income-expense-split",
-      "label": "收支分列·甲企业8 月",
-      "text": "甲企业8 月银行收入跟支出分别是多少？不要只给净额",
+      "text": "甲企业 2026 年 8 月的银行收入和支出分别是多少？不要只给净额",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -262,8 +261,7 @@
     {
       "id": "S-18",
       "slice": "income-expense-split",
-      "label": "收支分列·甲企业9 月",
-      "text": "甲企业9 月银行收入跟支出分别是多少？不要只给净额",
+      "text": "甲企业 2026 年 9 月的银行收入和支出分别是多少？不要只给净额",
       "userId": "U001",
       "enterpriseId": "C001",
       "spec": {
@@ -277,8 +275,7 @@
     {
       "id": "S-19",
       "slice": "income-expense-split",
-      "label": "收支分列·乙企业8 月",
-      "text": "乙企业8 月银行收入跟支出分别是多少？不要只给净额",
+      "text": "乙企业 2026 年 8 月的银行收入和支出分别是多少？不要只给净额",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {
@@ -292,8 +289,7 @@
     {
       "id": "S-20",
       "slice": "income-expense-split",
-      "label": "收支分列·乙企业9 月",
-      "text": "乙企业9 月银行收入跟支出分别是多少？不要只给净额",
+      "text": "乙企业 2026 年 9 月的银行收入和支出分别是多少？不要只给净额",
       "userId": "U001",
       "enterpriseId": "C002",
       "spec": {

@@ -4,6 +4,7 @@ import type { z } from 'zod';
 import { runAgentLoop, runScripted } from '../src/agent/agent-loop.js';
 import { createScriptedModel } from '../src/agent/scripted-model.js';
 import { assembleContext, estimateTokens } from '../src/context/index.js';
+import { provenanceStage } from '../src/harness/stages.js';
 import { logBroker, redactSecrets, withLogContext } from '../src/log/index.js';
 import {
   createRunState,
@@ -360,6 +361,54 @@ describe('数字溯源', () => {
     expect(out).toContain('9,622.06');
     expect(out).not.toContain('12,345.67');
     expect(out).toContain('数据待核对');
+  });
+});
+
+describe('零工具结果兜底（回复防护）', () => {
+  const ledger = [{ tool: 'summarize', path: 'invoice.total', value: '9,622.06' }];
+  const mkTrace = () => TraceRun.start({ runId: 'r-guard', providerId: 'p', modelId: 'm' });
+
+  it('toolCallCount=0 且草稿含金额占位/张数时，整体换成诚实兜底', () => {
+    const trace = mkTrace();
+    const draft = '甲企业 2026-08 发票价税合计 **9,046.35 元**（共 10 张）。依据：R001。';
+    const out = provenanceStage({
+      text: draft,
+      ledger: [], // 零工具结果
+      truncated: false,
+      trace,
+      toolCallCount: 0,
+    });
+    expect(out).toContain('没能获取到账务数据');
+    expect(out).not.toContain('9,046.35');
+    expect(out).not.toContain('共 10 张');
+  });
+
+  it('有工具结果时不误伤（toolCallCount>0 保留 strip 逻辑）', () => {
+    const trace = mkTrace();
+    const draft = '合计 9,622.06 元，另有 12,345.67 元存疑';
+    const out = provenanceStage({
+      text: draft,
+      ledger, // 上文的 ledger 含 9,622.06
+      truncated: false,
+      trace,
+      toolCallCount: 1,
+    });
+    expect(out).toContain('9,622.06');
+    expect(out).toContain('数据待核对'); // 存疑金额被 strip
+    expect(out).not.toContain('没能获取到账务数据');
+  });
+
+  it('零工具但纯追问回复（无金额/张数）不误伤', () => {
+    const trace = mkTrace();
+    const draft = '请告诉我：是哪张发票？要填什么用途？';
+    const out = provenanceStage({
+      text: draft,
+      ledger: [],
+      truncated: false,
+      trace,
+      toolCallCount: 0,
+    });
+    expect(out).toBe(draft);
   });
 });
 

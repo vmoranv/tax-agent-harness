@@ -260,6 +260,7 @@ export class Harness {
       ledger: executed.ledger,
       truncated: executed.truncated,
       trace,
+      toolCallCount: executed.toolCallCount,
     });
 
     // 持久化本轮对话（用户原话用原文，不用规范化后的文本）

@@ -184,7 +184,13 @@ export interface ProvenanceStageInput {
   readonly ledger: readonly LiteralEntry[];
   readonly truncated: boolean;
   readonly trace: TraceRun;
+  /** 本轮工具调用次数（0 = 模型未取数）。用于「零工具结果却声称有数据」兜底。 */
+  readonly toolCallCount: number;
 }
+
+/** 未取到数据却试图报数时的诚实兜底话术。 */
+const NO_DATA_FALLBACK =
+  '这一轮没能获取到账务数据，我无法给出金额或张数。请换个说法再问一次，或确认企业、月份后重试。';
 
 export function provenanceStage(input: ProvenanceStageInput): string {
   const checks = verifyProvenance(input.text, input.ledger);
@@ -198,6 +204,16 @@ export function provenanceStage(input: ProvenanceStageInput): string {
   if (unsourced.length > 0) {
     log.warn('回复含未溯源金额', { literals: unsourced.map((c) => c.literal) });
     text = stripUnsourced(input.text, checks);
+  }
+
+  // 零工具结果却仍含「（数据待核对）」占位（strip 产物）或声称张数/金额 →
+  // 不留半编造回复，整体换成诚实兜底。仅在此窄条件下触发，不误伤追问/权限澄清。
+  const halfFabricated =
+    input.toolCallCount === 0 &&
+    (text.includes('（数据待核对）') || /(共\s*\d+\s*张|价税合计|金额合计)/.test(text));
+  if (halfFabricated) {
+    log.warn('零工具结果却声称有数据，触发兜底', { toolCallCount: input.toolCallCount });
+    text = NO_DATA_FALLBACK;
   }
 
   if (input.truncated) {

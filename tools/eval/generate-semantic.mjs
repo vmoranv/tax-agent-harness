@@ -24,7 +24,7 @@ import {
   summarize,
 } from './lib.mjs';
 
-const DATASET_VERSION = 'semantic-2026-11-05';
+const DATASET_VERSION = 'semantic-2026-11-05-v2';
 const OUT = join(ROOT, 'fixtures/eval/semantic-cases.json');
 
 const data = loadDataset();
@@ -45,16 +45,20 @@ const cases = [];
 let seq = 0;
 const nextId = () => `S-${String(++seq).padStart(2, '0')}`;
 
-/** 金额查询：措辞 × 企业 × 月份，gold = 命中 summarize 工具 + 回复含独立金额。 */
+/**
+ * 金额查询：措辞 × 企业 × 月份，gold = 命中 summarize 工具 + 回复含独立金额。
+ * 月份用完整「2026 年 8 月」表述；4 个模板均为自然中文，不制造病句噪声
+ * （此前『甲企业在 8 月 开的』『甲企业8 月』把测语义变成了测病句鲁棒性）。
+ */
 const AMOUNT_TEMPLATES = [
-  (e, m) => `${e}${m}的发票一共多少钱？`,
-  (e, m) => `帮我看下${e} ${m} 的票面合计`,
-  (e, m) => `${e}在 ${m} 开的所有发票价税合计是多少`,
-  (e, m) => `统计一下${e}${m}的发票总金额`,
+  (e, m) => `${e} ${m}的发票一共多少钱？`,
+  (e, m) => `帮我查一下${e} ${m}的票面金额合计`,
+  (e, m) => `${e} ${m}开的所有发票，价税合计是多少？`,
+  (e, m) => `请统计${e} ${m}的发票总金额`,
 ];
 for (const [enterpriseId, label] of Object.entries(ENTERPRISE_LABEL)) {
   for (const month of ['2026-08', '2026-09']) {
-    const monthLabel = month === '2026-08' ? '8 月' : '9 月';
+    const monthLabel = month === '2026-08' ? '2026 年 8 月' : '2026 年 9 月';
     const gold = goldMoney(enterpriseId, month);
     for (const [ti, tpl] of AMOUNT_TEMPLATES.entries()) {
       cases.push({
@@ -78,13 +82,12 @@ for (const [enterpriseId, label] of Object.entries(ENTERPRISE_LABEL)) {
 /** 收支分列（adversarial 陷阱）：gold = 命中工具 + 回复同时含支出与收入且两者不同。 */
 for (const [enterpriseId, label] of Object.entries(ENTERPRISE_LABEL)) {
   for (const month of ['2026-08', '2026-09']) {
-    const monthLabel = month === '2026-08' ? '8 月' : '9 月';
+    const monthLabel = month === '2026-08' ? '2026 年 8 月' : '2026 年 9 月';
     const gold = goldMoney(enterpriseId, month);
     cases.push({
       id: nextId(),
       slice: 'income-expense-split',
-      label: `收支分列·${label}${monthLabel}`,
-      text: `${label}${monthLabel}银行收入跟支出分别是多少？不要只给净额`,
+      text: `${label} ${monthLabel}的银行收入和支出分别是多少？不要只给净额`,
       userId: 'U001',
       enterpriseId,
       spec: {

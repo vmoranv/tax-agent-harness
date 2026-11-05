@@ -189,12 +189,12 @@ pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 |---|---|---|
 | 集合 IR 指标 | 确定性 `selectApplicableRules` 的 Precision/Recall/F1（P/R/F1 = 100%），非向量 | `pnpm eval` 报告「三」 |
 | 向量检索诊断对照 | 本地确定性哈希嵌入 + 余弦 top-K 的 **P/R/F1 ≈ 58.3%（⚠️ 非评分）**：label leak、版本不可分、不稳健，无质量含义，仅作「若换向量检索会怎样」的结构诊断 | `pnpm eval` 报告「四」 |
-| 真模型语义评测（L6） | **LLM 参与决策与评分**：真实 `agnes-2.5-flash` 跑**程序化生成的 26 条语义变体**（6 切片：换措辞金额/收支分列/缺企业/缺月份/防臆测写入/权限边界），gold 由 `lib.mjs` 独立重算、判据写死机器可判；2026-11-05 实跑 **22/26 = 84.6%**（旧 4 条基线 75%）。结果非确定性、需 apikey/服务 | `pnpm eval:semantic:live` / `eval:semantic:gen`（独立，**不进 verify / CI**）|
+| 真模型语义评测（L6） | **LLM 参与决策与评分**：真实 `agnes-2.5-flash` 跑**程序化生成的 26 条语义变体**（6 切片，v2 已修病句），gold 由 `lib.mjs` 独立重算、判据写死机器可判；实测在 **~77–92% 间随机波动**（修复前 84.6%，病句修复+回复防护后两次 84.6%/92.3%，平均 88.5%；强化 prompt 实测更差已回退）。结果非确定性、需 apikey/服务 | `pnpm eval:semantic:live` / `eval:semantic:gen`（独立，**不进 verify / CI**）|
 | Trace 可观测性 | 真实 token 消耗 / 三类 step / 工具耗时 / 单步-累计时序全部落进 `trace_run`（2026-11-05 补齐 4 项缺口，详见 `docs/spec/14-eval-dataset.md` §8）| `/api/trace/:runId`、Web「运行记录」面板 |
 
 > 诚实边界：`pnpm eval` / `pnpm eval:golden` 都是**确定性管线**，不调用真 LLM；
 > 向量诊断值 ≈58.3% **不是可信评分**（本地哈希玩具实验，三处方法学缺陷，见报告「四」）；
-> 真正「LLM 参与评分」的是 `pnpm eval:semantic:live`（真模型、结果非确定性：2026-11-05 扩集 26 条实跑 22/26=84.6%，旧 4 条基线 75%；**扩集是覆盖面扩大，不是修系统让能力变强**，4 个失败仍是模型特定措辞下没调工具的真实缺陷）。
+> 真正「LLM 参与评分」的是 `pnpm eval:semantic:live`（真模型、结果非确定性：实测 ~77–92% 随机波动，修复病句+回复防护后无稳定提分；强化 prompt 负收益已回退，详见 `14-eval-dataset.md` §11）。
 > 线上规则检索仍是确定性三重过滤（5 条规则规模，无向量库）。
 
 两套体系在 `Money.parse`、规则选择（RuleSelector）等行为上**各写了一遍断言**
