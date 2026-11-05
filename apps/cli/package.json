@@ -1,0 +1,25 @@
+{
+  "name": "@harness/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "harness": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node --no-warnings=ExperimentalWarning dist/main.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@harness/domain": "workspace:*",
+    "@harness/contracts": "workspace:*",
+    "@harness/application": "workspace:*",
+    "@harness/adapters": "workspace:*",
+    "@harness/runtime": "workspace:*",
+    "commander": "15.0.0",
+    "zod": "4.6.7",
+    "dotenv": "^17.0.0"
+  }
+}

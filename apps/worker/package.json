@@ -1,0 +1,20 @@
+{
+  "name": "@harness/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node --no-warnings=ExperimentalWarning dist/worker.js",
+    "dev": "tsc -p tsconfig.json && node --no-warnings=ExperimentalWarning dist/worker.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^17.0.0",
+    "@harness/domain": "workspace:*",
+    "@harness/contracts": "workspace:*",
+    "@harness/application": "workspace:*",
+    "@harness/adapters": "workspace:*",
+    "@harness/runtime": "workspace:*"
+  }
+}

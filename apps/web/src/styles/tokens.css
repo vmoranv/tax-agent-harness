@@ -1,0 +1,161 @@
+/**
+ * 工业级设计令牌（Design Tokens & Motion System）。
+ *
+ * 运动工程学：
+ * - 物理阻尼曲线：`cubic-bezier(0.16, 1, 0.3, 1)`（超快响应起始，物理自然减速，无硬生生反弹）
+ * - 退出曲线：`cubic-bezier(0.4, 0, 1, 1)`（迅速收起，绝不阻塞用户下一步操作）
+ * - 所有动效严格限定于合成器层（`transform` 和 `opacity`），杜绝 Layout / Paint 触发
+ * - `will-change: transform, opacity` 配合硬件图层加速（`transform: translateZ(0)`）
+ * - 动效随时可打断（Interruptible）：用户连续点击或切换时，动画即时平滑衔接，不产生抖动或堆叠
+ *
+ * 隐形视觉引导（Invisible Visual Guidance）：
+ * - 16px 栅格节奏与统一的水平阅读基线
+ * - 采用 1px 发丝边框（Luminosity-based hairline border）替代厚重阴影
+ * - 账务数据一律等宽对齐（`font-variant-numeric: tabular-nums`）
+ * - 交互反馈：4% 微对比度底色过渡，微小 scale 触感反馈（`active: scale(0.99)`）
+ */
+
+:root {
+  /* ─── 物理缓动曲线 ─── */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quad: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-fast: cubic-bezier(0.4, 0, 1, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* ─── 响应时长 ─── */
+  --dur-instant: 90ms;
+  --dur-fast: 150ms;
+  --dur-normal: 220ms;
+  --dur-settle: 320ms;
+
+  /* ─── 空间拓扑 ─── */
+  --app-header-height: 56px;
+  --app-sidebar-width: 232px;
+  --app-sidebar-collapsed: 60px;
+  --panel-border-radius: 12px;
+  --bubble-border-radius: 14px;
+
+  /* ─── 字体系统 ─── */
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
+}
+
+/* 账务与度量数据：强制等宽对齐，杜绝错位抖动 */
+.tabular-nums {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings:
+    "tnum" 1,
+    "lnum" 1;
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+}
+
+/* 硬件加速容器 */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ──────────────── 路由切换：无硬阻塞，退出即时可打断 ──────────────── */
+.route-fade-enter-active {
+  transition:
+    opacity var(--dur-normal) var(--ease-spring),
+    transform var(--dur-normal) var(--ease-spring);
+  will-change: opacity, transform;
+}
+.route-fade-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.route-fade-leave-active {
+  transition: opacity var(--dur-instant) var(--ease-in-fast);
+}
+.route-fade-leave-to {
+  opacity: 0;
+}
+
+/* ──────────────── 消息列表：平滑插入与重排 ──────────────── */
+.msg-enter-active {
+  transition:
+    opacity var(--dur-normal) var(--ease-spring),
+    transform var(--dur-normal) var(--ease-spring);
+  will-change: opacity, transform;
+}
+.msg-leave-active {
+  position: absolute;
+  opacity: 0;
+  transition: opacity var(--dur-instant) var(--ease-in-fast);
+}
+.msg-enter-from {
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+}
+.msg-move {
+  transition: transform var(--dur-normal) var(--ease-spring);
+}
+
+/* ──────────────── 抽屉与卡片折叠 ──────────────── */
+.accordion-expand-enter-active,
+.accordion-expand-leave-active {
+  transition:
+    opacity var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-standard);
+  will-change: opacity, transform;
+}
+.accordion-expand-enter-from,
+.accordion-expand-leave-to {
+  opacity: 0;
+  transform: scaleY(0.96);
+  transform-origin: top;
+}
+
+/* ──────────────── 可交互行隐形引导 ──────────────── */
+.clickable-row {
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-instant) var(--ease-out-quad);
+}
+.clickable-row:hover {
+  background-color: rgba(var(--v-theme-on-surface), 0.04);
+}
+.clickable-row:active {
+  transform: scale(0.994);
+}
+.clickable-row:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: -1px;
+}
+
+/* ──────────────── 状态指示点 ──────────────── */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+
+/* ──────────────── 数字溯源高亮脉冲 ──────────────── */
+@keyframes provenance-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.4);
+    background-color: rgba(var(--v-theme-primary), 0.16);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(var(--v-theme-primary), 0);
+    background-color: rgba(var(--v-theme-primary), 0.24);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0);
+    background-color: transparent;
+  }
+}
+
+.prov-highlighted {
+  animation: provenance-glow 1.2s var(--ease-spring) 2;
+  border-radius: 4px;
+}
