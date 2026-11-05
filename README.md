@@ -160,25 +160,39 @@ tools/
 ## 验证
 
 ```bash
-pnpm verify       # typecheck + lint + 依赖规则 + 单测 + 覆盖率门禁 + 评测集
-pnpm test         # 仅单元测试
-pnpm dep:check    # 仅架构依赖检查
-pnpm eval         # 仅评测中台（244 例，L1–L7）
-pnpm eval:cov     # 仅覆盖率门禁（REQ 18/18，INV 22/22）
-pnpm eval:report  # 生成 Markdown 报告
-pnpm eval:golden  # 标准黄金评测集（50 条，retrieval/answer 分开计分）
+pnpm verify              # typecheck + lint + 依赖规则 + 单测 + 覆盖率门禁 + 评测集
+pnpm test                # 仅单元测试
+pnpm dep:check           # 仅架构依赖检查
+pnpm eval                # 评测中台：244 例 L1–L7 + 黄金集 50 条 + 集合/向量 IR 指标（统一报告，门禁内）
+pnpm eval:cov            # 仅覆盖率门禁（REQ 18/18，INV 22/22）
+pnpm eval:report         # 生成 Markdown 报告（含黄金集 / 向量检索基线）
+pnpm eval:golden         # 单独跑黄金集（50 条，retrieval/answer 分开计分）
+pnpm eval:semantic:live  # 真模型语义评测（LLM 参与评分，需 apikey + 服务；不进 verify / CI）
+pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 ```
 
 ### 测试与评测体系说明
 
 本项目有**三套相互独立、主题有重叠**的验证体系，三者**不重复计数**，
-不能把两边的数字相加当成「总测试数」：
+不能把两边的数字相加当成「总测试数」。此外 `pnpm eval` 中台还**内嵌**两类
+检索指标与真模型语义层，均在同一份统一报告里产出：
 
 | 体系 | 规模（大致） | 定位 | 运行方式 |
 |---|---|---|---|
 | vitest 单测 | 22 个测试文件、约 315 个 `it()` 块（`pnpm test` 报 25 files / 364 tests，含嵌套用例与 dist-test 副本） | 本地 / CI 快速回归，覆盖各包的函数级行为 | `pnpm test` |
 | eval 评测中台 | 244 例（L1–L7），当前 240 PASS、4 MANUAL | 面向评委的可核对证据，基于确定性真值（整数分、数据库状态、工具轨迹）做全链路断言 | `pnpm eval` |
-| golden 黄金评测集 | 50 条、7 切片、版本冻结（`fixtures/eval/golden-cases.json`） | 对标业界 50-200 条标准黄金集：`question + gold_answer + gold_sources + slice_tag`，retrieval/answer 分开计分；gold 由独立重算生成，非被测代码 | `pnpm eval:golden` / `pnpm eval:golden:gen` |
+| golden 黄金评测集 | 50 条、7 切片、版本冻结（`fixtures/eval/golden-cases.json`） | 对标业界 50-200 条标准黄金集：`question + gold_answer + gold_sources + slice_tag`，retrieval/answer 分开计分；gold 由独立重算生成，非被测代码 | **已接入 `pnpm eval`（统一报告 + 门禁）**；也可单独 `pnpm eval:golden` / `eval:golden:gen` |
+
+| 中台内嵌能力 | 说明 | 运行方式 |
+|---|---|---|
+| 集合 IR 指标 | 确定性 `selectApplicableRules` 的 Precision/Recall/F1（P/R/F1 = 100%），非向量 | `pnpm eval` 报告「三」 |
+| 向量检索基线 | 本地确定性哈希嵌入 + 余弦 top-K 的 IR 分数（macro P/R/F1 ≈ 58.3%）；**非语义 embedding 模型**，仅为可复算的向量化基线分数 | `pnpm eval` 报告「四」 |
+| 真模型语义评测（L6） | **LLM 参与决策与评分**：真实 `agnes-2.5-flash` 跑 4 条语义变体（换措辞/追问/指代），机器断言判分；结果非确定性、需 apikey/服务 | `pnpm eval:semantic:live`（独立，**不进 verify / CI**）|
+
+> 诚实边界：`pnpm eval` / `pnpm eval:golden` 都是**确定性管线**，不调用真 LLM；
+> 向量化分数是本地哈希嵌入基线，**不是**接入 OpenAI/Gemini embedding 服务；
+> 真正「LLM 参与评分」的是 `pnpm eval:semantic:live`（真模型、结果非确定性：2026-11-05 两次实跑分别 4/4、3/4，均过 ≥75% 阈值）。
+> 线上规则检索仍是确定性三重过滤（5 条规则规模，无向量库）。
 
 两套体系在 `Money.parse`、规则选择（RuleSelector）等行为上**各写了一遍断言**
 （如 `packages/domain/test/money.test.ts` / `rule-selector.test.ts` 对应 eval 的

@@ -47,6 +47,8 @@ import {
   summarize,
 } from './lib.mjs';
 import { computeRetrievalMetrics } from './retrieval-metrics.mjs';
+import { computeGolden } from './run-golden.mjs';
+import { computeVectorMetrics } from './vector-metrics.mjs';
 
 const args = process.argv.slice(2);
 const layerArg = args.find((a) => a.startsWith('--layer='))?.split('=')[1];
@@ -353,6 +355,12 @@ const dimensionsSummary = aggregateDimensions(results);
 /** 真实 IR 检索指标（确定性规则检索，非向量）：Precision/Recall/F1/版本命中率。 */
 const retrieval = await computeRetrievalMetrics();
 
+/** 标准黄金评测集（50 条，独立真值）：retrieval/answer 分开计分，并入中台统一报告。 */
+const goldenDataset = await computeGolden();
+
+/** 向量检索 IR 基线（本地确定性哈希嵌入 + 余弦 top-K），回答「向量化分数」。 */
+const vector = await computeVectorMetrics();
+
 const summary = {
   /** 赛题官方评分维度（权重来自 01_参赛说明.docx），评测中台不替代评委评分。 */
   officialDimensions: OFFICIAL_DIMENSIONS,
@@ -379,6 +387,8 @@ const summary = {
   }, {}),
   dimensions: dimensionsSummary,
   retrieval,
+  vector,
+  goldenDataset,
   results,
 };
 
@@ -470,9 +480,56 @@ if (asJson) {
     }
   }
   lines.push('');
+
+  // 四、向量检索 IR 基线（真实可复算的余弦分数）
+  lines.push('## 四、向量检索基线 (Vector IR · 本地确定性哈希嵌入 + 余弦)');
+  lines.push('');
+  lines.push(`> ${vector.disclaimer}`);
+  lines.push('');
+  lines.push('| 指标 | 值 |');
+  lines.push('|---|---|');
+  lines.push(`| Precision (macro) | ${(vector.macro.precision * 100).toFixed(1)}% |`);
+  lines.push(`| Recall (macro) | ${(vector.macro.recall * 100).toFixed(1)}% |`);
+  lines.push(`| F1 (macro) | ${(vector.macro.f1 * 100).toFixed(1)}% |`);
+  lines.push(`| top-K | ${vector.macro.topK}（= 每查询 gold 规则数） |`);
+  lines.push(`| 查询数 × 候选数 | ${vector.macro.queryCount} × ${vector.macro.candidateCount} |`);
+  lines.push('');
+  lines.push('| 查询 | gold | 向量 top-K retrieved | P | R | F1 | 版本一致 |');
+  lines.push('|---|---|---|---|---|---|---|');
+  for (const q of vector.queries) {
+    lines.push(
+      `| ${q.enterprise}/${q.month} | ${q.gold.join(', ')} | ${q.retrieved.join(', ')} | ${(q.precision * 100).toFixed(0)}% | ${(q.recall * 100).toFixed(0)}% | ${(q.f1 * 100).toFixed(0)}% | ${q.versionExact ? '✅' : '❌'} |`,
+    );
+  }
+  lines.push('');
+  lines.push(`> 方法：${vector.method}`);
+  lines.push('');
+
+  // 五、标准黄金评测集（50 条，独立真值）
+  lines.push('## 五、标准黄金评测集 (Golden Dataset · 50 条确定性管线)');
+  lines.push('');
+  lines.push(
+    `> 数据集版本 \`${goldenDataset.dataset_version}\` · ${goldenDataset.total} 条 · \`${goldenDataset.mode}\`。`,
+  );
+  lines.push(
+    '> gold_answer / gold_sources 由 lib.mjs 独立重算，非被测代码；与 244 例回归套件区分。',
+  );
+  lines.push('');
+  lines.push('| 切片 | 条数 | retrieval 命中 | answer 命中 |');
+  lines.push('|---|---|---|---|');
+  for (const [s, v] of Object.entries(goldenDataset.by_slice)) {
+    lines.push(
+      `| ${s} | ${v.total} | ${v.retrievalOk}/${v.retrievalN} | ${v.answerOk}/${v.total} |`,
+    );
+  }
+  lines.push('');
+  lines.push(
+    `合计：retrieval ${goldenDataset.retrieval.ok}/${goldenDataset.retrieval.n} (${(goldenDataset.retrieval.rate * 100).toFixed(1)}%) · answer ${goldenDataset.answer.ok}/${goldenDataset.answer.n} (${(goldenDataset.answer.rate * 100).toFixed(1)}%)`,
+  );
+  lines.push('');
   const failed = results.filter((r) => r.status === 'FAIL');
   if (failed.length > 0) {
-    lines.push('## 四、失败用例详情');
+    lines.push('## 六、失败用例详情');
     lines.push('');
     for (const f of failed) {
       lines.push(`### ${f.id} · ${f.title}`);
@@ -544,7 +601,34 @@ if (asJson) {
     );
   }
 
+  process.stdout.write(
+    '\n向量检索基线 (Vector IR · 本地哈希嵌入 + 余弦，非语义 embedding 模型)：\n',
+  );
+  {
+    const m = vector.macro;
+    const pct = (x) => `${(x * 100).toFixed(1)}%`.padStart(6);
+    process.stdout.write(
+      `  Precision ${pct(m.precision)}  Recall ${pct(m.recall)}  F1 ${pct(m.f1)}  ` +
+        `top-K=${m.topK}  (${m.queryCount} 查询 × ${m.candidateCount} 候选规则)\n`,
+    );
+    process.stdout.write(`  · ${vector.disclaimer}\n`);
+  }
+
+  process.stdout.write('\n标准黄金评测集 (Golden Dataset · 50 条确定性管线)：\n');
+  {
+    const r = goldenDataset.retrieval;
+    const a = goldenDataset.answer;
+    const pct = (x) => `${(x * 100).toFixed(1)}%`.padStart(6);
+    process.stdout.write(
+      `  retrieval ${r.ok}/${r.n} (${pct(r.rate)}) · answer ${a.ok}/${a.n} (${pct(a.rate)})  · 版本 ${goldenDataset.dataset_version}\n`,
+    );
+    process.stdout.write(
+      '  · gold 由 lib.mjs 独立重算；非真 LLM 语义（见 pnpm eval:semantic:live）。\n',
+    );
+  }
+
   const failed = results.filter((r) => r.status === 'FAIL');
+
   if (failed.length > 0) {
     process.stdout.write('\n失败详情：\n');
     for (const f of failed) {
@@ -564,5 +648,7 @@ if (asJson) {
 
 const hasFailure =
   summary.golden.ok === false ||
-  results.some((r) => r.status === 'FAIL' || r.status === 'UNVERIFIED');
+  results.some((r) => r.status === 'FAIL' || r.status === 'UNVERIFIED') ||
+  goldenDataset.retrieval.rate < 0.9 ||
+  goldenDataset.answer.rate < 0.9;
 process.exit(hasFailure ? 1 : 0);
