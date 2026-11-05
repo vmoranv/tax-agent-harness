@@ -34,7 +34,10 @@ export interface TraceStep {
   readonly index: number;
   readonly kind: StepKind;
   readonly at: string;
+  /** 本步真实耗时（距上一步结束的 duration，毫秒）。 */
   readonly elapsedMs: number;
+  /** 距 run 开始的累计毫秒（时间线位置，用于回放排序）。 */
+  readonly sinceStartMs: number;
   readonly payload: unknown;
 }
 
@@ -51,6 +54,8 @@ export interface TraceRunSnapshot {
   readonly steps: readonly TraceStep[];
   readonly toolCalls: readonly ToolCallRecordDto[];
   readonly provenance: readonly ProvenanceRecordDto[];
+  /** 真实模型 token 消耗（来自 AI SDK totalUsage，非启发式估算）。 */
+  readonly usage: { inputTokens: number; outputTokens: number };
   readonly finalText: string;
   readonly error: { code: string; message: string } | null;
 }
@@ -78,6 +83,12 @@ export class TraceRun {
   private failure: { code: string; message: string } | null = null;
   private readonly startMs: number;
   private readonly startedAt: string;
+  /** 上一步 record 的时刻，用于计算每步真实 duration。 */
+  private lastRecordMs: number;
+  private usageDto: { inputTokens: number; outputTokens: number } = {
+    inputTokens: 0,
+    outputTokens: 0,
+  };
 
   constructor(
     readonly runId: string,
@@ -87,6 +98,7 @@ export class TraceRun {
     private readonly enterpriseId: string | null = null,
   ) {
     this.startMs = Date.now();
+    this.lastRecordMs = this.startMs;
     this.startedAt = new Date(this.startMs).toISOString();
   }
 
@@ -112,16 +124,20 @@ export class TraceRun {
   /** 追加一步。超过上限后丢弃并标记截断。 */
   record(kind: StepKind, payload: unknown): void {
     if (this.steps.length >= MAX_STEPS) return;
+    const now = Date.now();
     this.steps.push({
       index: this.steps.length,
       kind,
-      at: new Date().toISOString(),
-      elapsedMs: Date.now() - this.startMs,
+      at: new Date(now).toISOString(),
+      // 本步真实耗时 = 距上一步结束的 duration；sinceStartMs = 时间线累计位置。
+      elapsedMs: now - this.lastRecordMs,
+      sinceStartMs: now - this.startMs,
       payload:
         typeof payload === 'string'
           ? clip(payload)
           : (JSON.parse(clip(JSON.stringify(payload))) as unknown),
     });
+    this.lastRecordMs = now;
   }
 
   /** 记录本轮送进模型的完整上下文（R4 的核心证据）。 */
@@ -161,6 +177,26 @@ export class TraceRun {
     this.finalText = clip(text);
   }
 
+  /** 真实模型 token 消耗（由 executeStage 从 AI SDK totalUsage 透传）。 */
+  setUsage(usage: { inputTokens: number; outputTokens: number }): void {
+    this.usageDto = { inputTokens: usage.inputTokens, outputTokens: usage.outputTokens };
+  }
+
+  /** 模型决策开始（补 StepKind.model.call，此前声明却从不 emit）。 */
+  recordModelCall(meta: { stepCount: number; maxSteps: number }): void {
+    this.record('model.call', { ...meta });
+  }
+
+  /** 回复渲染完成（补 StepKind.reply.rendered）。 */
+  recordReplyRendered(meta: { textLength: number; truncated: boolean }): void {
+    this.record('reply.rendered', { ...meta });
+  }
+
+  /** 会话历史写入（补 StepKind.memory.write）。 */
+  recordMemoryWrite(meta: { turns: number }): void {
+    this.record('memory.write', { ...meta });
+  }
+
   finish(): void {
     if (this.finishedAt !== null) return;
     this.record('run.end', { elapsedMs: Date.now() - this.startMs });
@@ -188,6 +224,7 @@ export class TraceRun {
       steps: this.steps,
       toolCalls: this.tools,
       provenance: this.provenanceRows,
+      usage: this.usageDto,
       finalText: this.finalText,
       error: this.failure,
     };

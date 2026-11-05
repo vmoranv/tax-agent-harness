@@ -74,10 +74,13 @@ export interface AgentLoopResult {
   readonly truncated: boolean;
 }
 
-/** 把声明式工具规格转成 AI SDK 的 ToolSet。 */
+/** 把声明式工具规格转成 AI SDK 的 ToolSet。
+ * onExecuted 把每次工具执行的真实耗时按 toolCallId 回报给 runAgentLoop，
+ * 供 onToolResult / trace 使用（此前在线路径硬编码 elapsedMs: 0）。 */
 export function buildToolSet(
   specs: readonly AgentToolSpec[],
   ctx: ToolInvocationContext,
+  onExecuted?: (toolCallId: string, elapsedMs: number) => void,
 ): Record<string, Tool> {
   const set: Record<string, Tool> = {};
   for (const spec of specs) {
@@ -87,13 +90,14 @@ export function buildToolSet(
     const factory = tool as unknown as (def: {
       description: string;
       inputSchema: z.ZodTypeAny;
-      execute: (args: never) => Promise<ToolExecutionResult>;
+      execute: (args: never, options: { toolCallId: string }) => Promise<ToolExecutionResult>;
     }) => Tool;
 
     set[spec.name] = factory({
       description: spec.description,
       inputSchema: spec.inputSchema,
-      execute: async (args) => {
+      execute: async (args, options) => {
+        const t0 = Date.now();
         // 永不 throw：错误以结构化结果返回，模型据此自我修正
         try {
           return await spec.execute(args as unknown, ctx);
@@ -106,6 +110,8 @@ export function buildToolSet(
               hint: '可以重试一次，或告知用户当前无法完成',
             },
           };
+        } finally {
+          onExecuted?.(options?.toolCallId ?? '', Date.now() - t0);
         }
       },
     });
@@ -122,13 +128,17 @@ export async function runAgentLoop(input: AgentLoopInput): Promise<AgentLoopResu
   const startedAt = Date.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), input.timeoutMs ?? 90_000);
+  // 每次工具执行的真实耗时，按 toolCallId 索引；buildToolSet 的 execute 回报。
+  const toolTimings = new Map<string, number>();
 
   try {
     const result = await generateText({
       model: input.model,
       instructions: input.instructions,
       messages: input.messages.map((m) => ({ role: m.role, content: m.content })),
-      tools: buildToolSet(input.tools, input.toolContext),
+      tools: buildToolSet(input.tools, input.toolContext, (toolCallId, elapsedMs) => {
+        toolTimings.set(toolCallId, elapsedMs);
+      }),
       stopWhen: isStepCount(input.maxSteps),
       abortSignal: controller.signal,
       // 写操作密集：重试交给「同值 no-op + 乐观锁」，不交给 SDK
@@ -172,7 +182,7 @@ export async function runAgentLoop(input: AgentLoopInput): Promise<AgentLoopResu
             result: r.ok
               ? { ok: true, data: r.data }
               : { ok: false, error: { code: 'INTERNAL', message: '工具返回失败' } },
-            elapsedMs: 0,
+            elapsedMs: toolTimings.get(r.id) ?? 0,
           });
         }
       },

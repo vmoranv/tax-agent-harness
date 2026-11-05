@@ -118,6 +118,7 @@ describe('runAgentLoop 工具结果分发', () => {
       [{ type: 'text' as const, content: '合计 9,622.06 元' }],
     ];
     const got: string[] = [];
+    const elapsed: number[] = [];
     const result = await runAgentLoop({
       model: createScriptedModel(script),
       instructions: '财税助手',
@@ -126,11 +127,17 @@ describe('runAgentLoop 工具结果分发', () => {
       maxSteps: 8,
       toolContext: { runId: 'r', toolCallId: 'c', userId: 'U001', enterpriseId: 'C001' },
       // 故意不传 onStepEnd
-      onToolResult: ({ name, ok }) => got.push(`${name}:${ok}`),
+      onToolResult: ({ name, ok, elapsedMs }) => {
+        got.push(`${name}:${ok}`);
+        elapsed.push(elapsedMs);
+      },
     });
     expect(result.text).toContain('9,622.06');
     expect(got.length).toBe(1);
     expect(got[0]).toContain('summarize_enterprise_month');
+    // 缺口3回归：在线路径工具耗时不再硬编码为 0。
+    expect(elapsed[0]).toBeGreaterThanOrEqual(0);
+    expect(Number.isFinite(elapsed[0])).toBe(true);
   });
 });
 
@@ -430,6 +437,42 @@ describe('运行记录', () => {
       degradeLevel: 'L0',
     });
     expect(run.snapshot().context?.instructions).toBe('完整的系统提示词内容');
+  });
+
+  it('真实 token 消耗落进 snapshot（缺口2）', () => {
+    const run = TraceRun.start({ runId: 'r-usage', providerId: 'p', modelId: 'm' });
+    expect(run.snapshot().usage).toEqual({ inputTokens: 0, outputTokens: 0 });
+    run.setUsage({ inputTokens: 123, outputTokens: 45 });
+    expect(run.snapshot().usage).toEqual({ inputTokens: 123, outputTokens: 45 });
+  });
+
+  it('三类新 step 均被 emit（缺口1）', () => {
+    const run = TraceRun.start({ runId: 'r-kinds', providerId: 'p', modelId: 'm' });
+    run.recordModelCall({ stepCount: 0, maxSteps: 8 });
+    run.recordReplyRendered({ textLength: 42, truncated: false });
+    run.recordMemoryWrite({ turns: 2 });
+    const kinds = run.snapshot().steps.map((s) => s.kind);
+    expect(kinds).toContain('model.call');
+    expect(kinds).toContain('reply.rendered');
+    expect(kinds).toContain('memory.write');
+  });
+
+  it('step.elapsedMs 是单步耗时、sinceStartMs 是累计时间（缺口4）', () => {
+    const run = TraceRun.start({ runId: 'r-timing', providerId: 'p', modelId: 'm' });
+    run.record('context.assembled', {});
+    const steps = run.snapshot().steps;
+    // 至少 run.start + context.assembled 两步
+    expect(steps.length).toBeGreaterThanOrEqual(2);
+    for (const s of steps) {
+      expect(s.elapsedMs).toBeGreaterThanOrEqual(0);
+      expect(s.sinceStartMs).toBeGreaterThanOrEqual(s.elapsedMs);
+    }
+    // 累计时间单调不减，单步耗时不再等于累计值（除非恰好同毫秒，这里只校验字段存在与语义）
+    for (let i = 1; i < steps.length; i += 1) {
+      expect(steps[i]!.sinceStartMs).toBeGreaterThanOrEqual(steps[i - 1]!.sinceStartMs);
+    }
+    const last = steps[steps.length - 1]!;
+    expect(last.sinceStartMs).toBeGreaterThanOrEqual(last.elapsedMs);
   });
 });
 

@@ -269,6 +269,7 @@ export class Harness {
       await this.deps.session
         .append(sessionKey, 'assistant', finalText)
         .catch((e: unknown) => log.warn('会话历史写入失败（assistant）', { error: String(e) }));
+      trace.recordMemoryWrite({ turns: 2 });
     }
 
     await platform.send(event, { kind: 'done', text: finalText });

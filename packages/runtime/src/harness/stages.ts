@@ -127,10 +127,14 @@ export interface ExecuteStageOutput {
   readonly truncated: boolean;
   readonly toolCallCount: number;
   readonly ledger: readonly LiteralEntry[];
+  /** 真实模型 token 消耗（AI SDK totalUsage），供 trace 落库。 */
+  readonly usage: { inputTokens: number; outputTokens: number };
 }
 
 export async function executeStage(input: ExecuteStageInput): Promise<ExecuteStageOutput> {
   const ledger: LiteralEntry[] = [];
+  // 模型决策开始（补 StepKind.model.call 缺口）。
+  input.trace.recordModelCall({ stepCount: 0, maxSteps: input.maxSteps });
 
   const loop = await runAgentLoop({
     model: input.model,
@@ -161,11 +165,15 @@ export async function executeStage(input: ExecuteStageInput): Promise<ExecuteSta
     },
   });
 
+  // 真实 token 消耗落 trace（此前 loop.usage 被整个丢弃）。
+  input.trace.setUsage(loop.usage);
+
   return {
     text: loop.text,
     truncated: loop.truncated,
     toolCallCount: loop.steps.reduce((n, s) => n + s.toolCalls.length, 0),
     ledger,
+    usage: loop.usage,
   };
 }
 
@@ -200,5 +208,6 @@ export function provenanceStage(input: ProvenanceStageInput): string {
   }
 
   input.trace.setFinalText(text);
+  input.trace.recordReplyRendered({ textLength: text.length, truncated: input.truncated });
   return text;
 }

@@ -54,6 +54,9 @@
           </div>
           <div class="text-caption text-medium-emphasis mt-2 tabular-nums">
             耗时 {{ detail.elapsedMs }}ms · 模型 {{ detail.model.modelId }}
+            <template v-if="detail.usage">
+              · Token 输入 {{ detail.usage.inputTokens }} / 输出 {{ detail.usage.outputTokens }}
+            </template>
             <template v-if="detail.error !== null">
               · <span class="text-error">{{ detail.error.code }}</span>
             </template>
@@ -111,7 +114,9 @@
                 style="border: 1px solid rgba(var(--v-border-color), 0.08); border-radius: 6px"
               >
                 <span class="tabular-nums font-weight-medium">{{ s.kind }}</span>
-                <span class="text-disabled tabular-nums">{{ s.elapsedMs }}ms</span>
+                <span class="text-disabled tabular-nums">
+                  +{{ s.sinceStartMs ?? 0 }}ms · 本步 {{ s.elapsedMs }}ms
+                </span>
               </div>
             </div>
           </template>

@@ -186,7 +186,14 @@ export interface TraceDetailDto {
     estimatedTokens: number;
     degradeLevel: string;
   } | null;
-  steps: Array<{ index: number; kind: string; at: string; elapsedMs: number; payload: unknown }>;
+  steps: Array<{
+    index: number;
+    kind: string;
+    at: string;
+    elapsedMs: number;
+    sinceStartMs: number;
+    payload: unknown;
+  }>;
   toolCalls: Array<{
     id: string;
     name: string;
@@ -197,6 +204,8 @@ export interface TraceDetailDto {
     errorCode?: string;
   }>;
   provenance: Array<{ literal: string; source: string; ok: boolean }>;
+  /** 真实模型 token 消耗（AI SDK totalUsage）。 */
+  usage: { inputTokens: number; outputTokens: number };
   finalText: string;
   error: { code: string; message: string } | null;
 }

@@ -188,6 +188,7 @@ pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 | 集合 IR 指标 | 确定性 `selectApplicableRules` 的 Precision/Recall/F1（P/R/F1 = 100%），非向量 | `pnpm eval` 报告「三」 |
 | 向量检索诊断对照 | 本地确定性哈希嵌入 + 余弦 top-K 的 **P/R/F1 ≈ 58.3%（⚠️ 非评分）**：label leak、版本不可分、不稳健，无质量含义，仅作「若换向量检索会怎样」的结构诊断 | `pnpm eval` 报告「四」 |
 | 真模型语义评测（L6） | **LLM 参与决策与评分**：真实 `agnes-2.5-flash` 跑 4 条语义变体（换措辞/追问/指代），机器断言判分；结果非确定性、需 apikey/服务 | `pnpm eval:semantic:live`（独立，**不进 verify / CI**）|
+| Trace 可观测性 | 真实 token 消耗 / 三类 step / 工具耗时 / 单步-累计时序全部落进 `trace_run`（2026-11-05 补齐 4 项缺口，详见 `docs/spec/14-eval-dataset.md` §8）| `/api/trace/:runId`、Web「运行记录」面板 |
 
 > 诚实边界：`pnpm eval` / `pnpm eval:golden` 都是**确定性管线**，不调用真 LLM；
 > 向量诊断值 ≈58.3% **不是可信评分**（本地哈希玩具实验，三处方法学缺陷，见报告「四」）；
