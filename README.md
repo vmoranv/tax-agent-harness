@@ -57,7 +57,7 @@ pnpm harness web --port 9601
 pnpm harness demo --scenario all
 ```
 
-详细步骤见 [`docs/runbook.md`](docs/runbook.md)。
+详细步骤见本地 `docs/runbook.md`（文档目录已加入 `.gitignore`，仅本地留存、不入库）。
 
 ---
 
@@ -115,11 +115,7 @@ apps/
   cli/               命令行
   server/            后端 HTTP（fastify + SSE）
   web/               本地演示台（Vue 3 + Vuetify）
-docs/
-  spec/              完整规格文档（15 篇，约 8000 行）
-  runbook.md         运行手册
-  design-summary.md  提交用设计说明（2 页）
-  demo-script.md     5 分钟演示分镜
+docs/              （本地留存，已加入 .gitignore，不入库：spec/、runbook、设计说明、演示脚本）
 fixtures/
   excel/             赛题原始数据副本（只读）
   eval/              评测数据集（40 票 + 48 流水 + 5 规则 + 权限矩阵）
@@ -133,28 +129,8 @@ tools/
 
 ## 文档
 
-| 文档 | 内容 |
-|---|---|
-| [`docs/spec/README.md`](docs/spec/README.md) | Spec 总索引与一页纸摘要 |
-| [`docs/spec/00-requirement-analysis.md`](docs/spec/00-requirement-analysis.md) | 赛题要求解析：18 条硬约束、数据事实、评分对照 |
-| [`docs/spec/01-architecture.md`](docs/spec/01-architecture.md) | 架构设计：6 包分层、6 个上下文、8 条边界机制、10 条 ADR |
-| [`docs/spec/02-domain-model.md`](docs/spec/02-domain-model.md) | 领域模型：聚合、值对象、不变量、领域事件 |
-| [`docs/spec/03-runtime-pipeline.md`](docs/spec/03-runtime-pipeline.md) | 运行时：洋葱 Pipeline、Agent 循环、上下文降级、数字溯源 |
-| [`docs/spec/04-plugin-system.md`](docs/spec/04-plugin-system.md) | 插件系统：7 个扩展点、加载器、失败隔离 |
-| [`docs/spec/05-data-persistence.md`](docs/spec/05-data-persistence.md) | 数据：完整 DDL、迁移、导入自检、幂等与复核 |
-| [`docs/spec/06-application-layer.md`](docs/spec/06-application-layer.md) | 应用层：端口、用例、权限、错误码 |
-| [`docs/spec/07-directory-and-conventions.md`](docs/spec/07-directory-and-conventions.md) | 工程约定：目录、依赖规则、命名、Money 写法 |
-| [`docs/spec/08-testing-strategy.md`](docs/spec/08-testing-strategy.md) | 测试：7 层、假模型、golden values、需求追溯 |
-| [`docs/spec/09-roadmap.md`](docs/spec/09-roadmap.md) | 路线图：5 天计划、工作量估算、砍功能优先级 |
-| [`docs/spec/10-review-decisions.md`](docs/spec/10-review-decisions.md) | 评审结论与取舍：5 个致命缺陷、哪些建议拒绝及理由 |
-| [`docs/spec/11-frontend-design.md`](docs/spec/11-frontend-design.md) | 前端设计：Vue 3 + Vuetify（对齐 Harness 底座）、四面板、SSE 契约 |
-| [`docs/spec/12-ddd-implementation-plan.md`](docs/spec/12-ddd-implementation-plan.md) | DDD 实施计划：逐包文件清单、签名、验收命令 |
-| [`docs/spec/13-fanout-prompts.md`](docs/spec/13-fanout-prompts.md) | Fanout 提示词模板 |
-| [`docs/spec/14-eval-dataset.md`](docs/spec/14-eval-dataset.md) | 评测集：244 条用例、真值算法、三层断言阶梯、覆盖矩阵 |
-| [`docs/spec/17-dream-rsi-research.md`](docs/spec/17-dream-rsi-research.md) | Dream-RSI 调研与适配性评估：机制、成立前提、与本项目明确错配不落地 |
-| [`docs/runbook.md`](docs/runbook.md) | 运行手册：安装、配置、命令、验证清单、FAQ |
-| [`docs/design-summary.md`](docs/design-summary.md) | 提交用设计说明 |
-| [`docs/demo-script.md`](docs/demo-script.md) | 演示分镜脚本 |
+完整规格文档、运行手册、设计说明与演示脚本均**本地留存于 `docs/`，已加入 `.gitignore` 不入库**（因此本仓库不含 `docs/` 目录）。需要在本地查阅；评测集与验证命令见下文「验证」与各 `pnpm` 脚本。
+
 
 ---
 
@@ -191,11 +167,11 @@ pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 | 集合 IR 指标 | 确定性 `selectApplicableRules` 的 Precision/Recall/F1（P/R/F1 = 100%），非向量 | `pnpm eval` 报告「三」 |
 | 向量检索诊断对照 | 本地确定性哈希嵌入 + 余弦 top-K 的 **P/R/F1 ≈ 58.3%（⚠️ 非评分）**：label leak、版本不可分、不稳健，无质量含义，仅作「若换向量检索会怎样」的结构诊断 | `pnpm eval` 报告「四」 |
 | 真模型语义评测（L6） | **LLM 参与决策与评分**：真实 `agnes-2.5-flash` 跑**程序化生成的 26 条语义变体**（6 切片，v2 已修病句），gold 由 `lib.mjs` 独立重算、判据写死机器可判；实测在 **~77–92% 间随机波动**（修复前 84.6%，病句修复+回复防护后两次 84.6%/92.3%，平均 88.5%；强化 prompt 实测更差已回退）。结果非确定性、需 apikey/服务 | `pnpm eval:semantic:live` / `eval:semantic:gen`（独立，**不进 verify / CI**）|
-| Trace 可观测性 | 真实 token 消耗 / 三类 step / 工具耗时 / 单步-累计时序全部落进 `trace_run`（2026-11-05 补齐 4 项缺口，详见 `docs/spec/14-eval-dataset.md` §8）| `/api/trace/:runId`、Web「运行记录」面板 |
+| Trace 可观测性 | 真实 token 消耗 / 三类 step / 工具耗时 / 单步-累计时序全部落进 `trace_run`（2026-11-05 补齐 4 项缺口；细节见本地 spec，不入库）| `/api/trace/:runId`、Web「运行记录」面板 |
 
 > 诚实边界：`pnpm eval` / `pnpm eval:golden` 都是**确定性管线**，不调用真 LLM；
 > 向量诊断值 ≈58.3% **不是可信评分**（本地哈希玩具实验，三处方法学缺陷，见报告「四」）；
-> 真正「LLM 参与评分」的是 `pnpm eval:semantic:live`（真模型、结果非确定性：实测 ~77–92% 随机波动，修复病句+回复防护后无稳定提分；强化 prompt 负收益已回退，详见 `14-eval-dataset.md` §11）。
+> 真正「LLM 参与评分」的是 `pnpm eval:semantic:live`（真模型、结果非确定性：实测 ~77–92% 随机波动，修复病句+回复防护后无稳定提分；强化 prompt 负收益已回退；细节见本地 spec，不入库）。
 > 线上规则检索仍是确定性三重过滤（5 条规则规模，无向量库）。
 
 两套体系在 `Money.parse`、规则选择（RuleSelector）等行为上**各写了一遍断言**
@@ -240,7 +216,7 @@ node tools/eval/run-eval.mjs --json    # CI 用
 node tools/eval/run-eval.mjs --layer=l1
 ```
 
-评委可复现的核对步骤见 [`docs/runbook.md` §7](docs/runbook.md)。
+评委可复现的核对步骤见本地 `docs/runbook.md` §7（文档仅本地留存、不入库）。
 
 ---
 
