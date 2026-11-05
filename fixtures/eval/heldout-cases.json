@@ -1,0 +1,253 @@
+{
+  "dataset_version": "heldout-2026-11-05",
+  "generated_from": "dataset.source.json + rules.json（lib.mjs 独立重算）",
+  "source_note": "held-out 泛化探针：与 26 条语义集刻意错开(新月份/新任务/新措辞/复合问题)，判据机器可判，文本零重叠，非挑题凑分。",
+  "total": 14,
+  "slices": [
+    "amount-new-phrasing",
+    "compound",
+    "empty-month",
+    "rule-explanation",
+    "split-new-phrasing"
+  ],
+  "by_slice": {
+    "empty-month": 2,
+    "amount-new-phrasing": 4,
+    "split-new-phrasing": 2,
+    "rule-explanation": 3,
+    "compound": 3
+  },
+  "no_overlap_with_train": true,
+  "cases": [
+    {
+      "id": "H-01",
+      "slice": "empty-month",
+      "label": "空月·甲企业7 月",
+      "text": "甲企业 2026 年 7 月开了票吗？金额合计多少",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "empty-month",
+        "expectTool": "summarize_enterprise_month"
+      },
+      "justification": "lib: C001/2026-07 isEmpty=true（训练只用 08/09）"
+    },
+    {
+      "id": "H-02",
+      "slice": "empty-month",
+      "label": "空月·乙企业7 月",
+      "text": "乙企业 2026 年 7 月开了票吗？金额合计多少",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "empty-month",
+        "expectTool": "summarize_enterprise_month"
+      },
+      "justification": "lib: C002/2026-07 isEmpty=true（训练只用 08/09）"
+    },
+    {
+      "id": "H-03",
+      "slice": "amount-new-phrasing",
+      "label": "新措辞金额·C001/2026-09",
+      "text": "甲企业九月，票面总共几个钱？",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,622.06"
+      },
+      "justification": "lib 独立汇总 C001/2026-09 发票 = 9,622.06（文本为 26 条未见过的口语/倒装/省略）"
+    },
+    {
+      "id": "H-04",
+      "slice": "amount-new-phrasing",
+      "label": "新措辞金额·C002/2026-08",
+      "text": "帮我算下乙企业八月的发票，加一起是多少",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "13,667.05"
+      },
+      "justification": "lib 独立汇总 C002/2026-08 发票 = 13,667.05（文本为 26 条未见过的口语/倒装/省略）"
+    },
+    {
+      "id": "H-05",
+      "slice": "amount-new-phrasing",
+      "label": "新措辞金额·C001/2026-08",
+      "text": "八月份甲企业那批发票，总额报一下",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,046.35"
+      },
+      "justification": "lib 独立汇总 C001/2026-08 发票 = 9,046.35（文本为 26 条未见过的口语/倒装/省略）"
+    },
+    {
+      "id": "H-06",
+      "slice": "amount-new-phrasing",
+      "label": "新措辞金额·C002/2026-09",
+      "text": "想了解下乙企业 9 月发票的合计金额",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "12,667.24"
+      },
+      "justification": "lib 独立汇总 C002/2026-09 发票 = 12,667.24（文本为 26 条未见过的口语/倒装/省略）"
+    },
+    {
+      "id": "H-07",
+      "slice": "split-new-phrasing",
+      "label": "新措辞收支·C001/2026-09",
+      "text": "甲企业刚过去的九月，进账和出账各多少？分开说",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "split",
+        "expectTool": "summarize_enterprise_month",
+        "goldExpense": "7,180.74",
+        "goldIncome": "13,000.50"
+      },
+      "justification": "lib 独立汇总 C001/2026-09 支出=7,180.74 收入=13,000.50"
+    },
+    {
+      "id": "H-08",
+      "slice": "split-new-phrasing",
+      "label": "新措辞收支·C002/2026-08",
+      "text": "乙企业八月银行进出两笔分别报一下，别合起来",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "split",
+        "expectTool": "summarize_enterprise_month",
+        "goldExpense": "9,341.10",
+        "goldIncome": "18,800.25"
+      },
+      "justification": "lib 独立汇总 C002/2026-08 支出=9,341.10 收入=18,800.25"
+    },
+    {
+      "id": "H-09",
+      "slice": "rule-explanation",
+      "label": "规则解释·C001/2026-09",
+      "text": "甲企业九月这期，到底按哪几条规则来？把版本号带上",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "rules",
+        "expectTool": "explain_rules",
+        "goldCodes": [
+          "R001",
+          "R002",
+          "R004"
+        ]
+      },
+      "justification": "lib selectRules C001/2026-09 = R001@1.0,R002@2.0,R004@1.0（新任务类型）"
+    },
+    {
+      "id": "H-10",
+      "slice": "rule-explanation",
+      "label": "规则解释·C002/2026-08",
+      "text": "乙企业八月适用的规则清单列一下",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "rules",
+        "expectTool": "explain_rules",
+        "goldCodes": [
+          "R001",
+          "R003",
+          "R004"
+        ]
+      },
+      "justification": "lib selectRules C002/2026-08 = R001@1.0,R003@1.0,R004@1.0（新任务类型）"
+    },
+    {
+      "id": "H-11",
+      "slice": "rule-explanation",
+      "label": "规则解释·C001/2026-07",
+      "text": "甲企业 7 月都还没数据，那会儿适用什么规则",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "rules",
+        "expectTool": "explain_rules",
+        "goldCodes": [
+          "R001",
+          "R004"
+        ]
+      },
+      "justification": "lib selectRules C001/2026-07 = R001@1.0,R004@1.0（新任务类型）"
+    },
+    {
+      "id": "H-12",
+      "slice": "compound",
+      "label": "复合问题·C001/2026-09",
+      "text": "甲企业九月发票合计多少，顺便说下按了哪些规则",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "compound",
+        "expectTools": [
+          "summarize_enterprise_month",
+          "explain_rules"
+        ],
+        "goldInvoice": "9,622.06",
+        "goldCodes": [
+          "R001",
+          "R002",
+          "R004"
+        ]
+      },
+      "justification": "一句话同时要金额(9,622.06)与规则(R001@1.0,R002@2.0,R004@1.0)——26 条均为单任务"
+    },
+    {
+      "id": "H-13",
+      "slice": "compound",
+      "label": "复合问题·C002/2026-09",
+      "text": "乙企业九月收支各多少，另外发票总额也报一下",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "compound",
+        "expectTools": [
+          "summarize_enterprise_month",
+          "explain_rules"
+        ],
+        "goldInvoice": "12,667.24",
+        "goldCodes": [
+          "R001",
+          "R003",
+          "R004"
+        ]
+      },
+      "justification": "一句话同时要金额(12,667.24)与规则(R001@1.0,R003@1.0,R004@1.0)——26 条均为单任务"
+    },
+    {
+      "id": "H-14",
+      "slice": "compound",
+      "label": "复合问题·C001/2026-08",
+      "text": "甲企业八月金额和当月适用规则都列出来",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "compound",
+        "expectTools": [
+          "summarize_enterprise_month",
+          "explain_rules"
+        ],
+        "goldInvoice": "9,046.35",
+        "goldCodes": [
+          "R001",
+          "R004"
+        ]
+      },
+      "justification": "一句话同时要金额(9,046.35)与规则(R001@1.0,R004@1.0)——26 条均为单任务"
+    }
+  ]
+}

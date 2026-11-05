@@ -23,6 +23,7 @@
  *   pnpm eval:semantic:live --json                       # 机器可读 JSON
  *   pnpm eval:semantic:live --markdown                   # Markdown 报告
  *   pnpm eval:semantic:live --legacy                     # 只跑旧 4 条基线（对比用）
+ *   pnpm eval:semantic:live --heldout                    # held-out 泛化探针（独立冻结集，测分布外能力）
  *   node tools/eval/run-semantic-live.mjs --base=http://127.0.0.1:9601
  */
 import { readFileSync } from 'node:fs';
@@ -34,6 +35,7 @@ const args = process.argv.slice(2);
 const asJson = args.includes('--json');
 const asMarkdown = args.includes('--markdown');
 const legacyOnly = args.includes('--legacy');
+const heldout = args.includes('--heldout');
 const baseArg = args.find((a) => a.startsWith('--base='));
 const baseFromArg = baseArg ? baseArg.slice('--base='.length).trim() : '';
 const BASE = baseFromArg || process.env.HARNESS_API_BASE || 'http://127.0.0.1:9601';
@@ -72,6 +74,9 @@ const BIZ_TOOLS = [
 ];
 const WRITE_TOOLS = ['set_invoice_purpose', 'set_invoice_remark'];
 
+/** 匹配非零金额字面量（空月回复不应出现任何非零金额）。 */
+const NONZERO_MONEY_RE = /[1-9]\d{0,2}(?:,\d{3})*\.\d{2}|[1-9]\d*\.\d{2}/g;
+
 /**
  * 按 spec.kind 分派判定。ctx = { tools(工具名数组), text, trace }。
  * 返回 { ok, reason }。判据写死、从严，不依赖模型自报。
@@ -96,6 +101,34 @@ function judge(spec, { tools, text }) {
         reason: `应调 ${spec.expectTool} 且收支分列：支出 ${spec.goldExpense}、收入 ${spec.goldIncome}（不得用净额）`,
       };
     }
+    case 'empty-month': {
+      // 空月：命中工具，且回复不含任何非零金额（须如实说 0 / 无记录，不能报数）。
+      const nonzero = (text.match(NONZERO_MONEY_RE) ?? []).filter((m) => m !== '0.00');
+      const ok = tools.includes(spec.expectTool) && nonzero.length === 0;
+      return {
+        ok,
+        reason: `空月应命中 ${spec.expectTool} 且不报非零金额${nonzero.length ? `（实际出现 ${nonzero.join(',')}）` : ''}`,
+      };
+    }
+    case 'rules': {
+      const missing = (spec.goldCodes ?? []).filter((code) => !text.includes(code));
+      const ok = tools.includes(spec.expectTool) && missing.length === 0;
+      return {
+        ok,
+        reason: `应调 ${spec.expectTool} 且回复含 gold 规则 ${(spec.goldCodes ?? []).join(',')}${missing.length ? `（缺 ${missing.join(',')}）` : ''}`,
+      };
+    }
+    case 'compound': {
+      const missingTools = (spec.expectTools ?? []).filter((t) => !tools.includes(t));
+      const ok =
+        missingTools.length === 0 &&
+        text.includes(spec.goldInvoice) &&
+        (spec.goldCodes ?? []).every((code) => text.includes(code));
+      return {
+        ok,
+        reason: `复合问题应命中 ${(spec.expectTools ?? []).join('+')} 且回复含金额 ${spec.goldInvoice} 与规则 ${(spec.goldCodes ?? []).join(',')}${missingTools.length ? `（缺工具 ${missingTools.join(',')}）` : ''}`,
+      };
+    }
     case 'no-biz-tool': {
       const hit = tools.filter((t) => BIZ_TOOLS.includes(t));
       return {
@@ -117,7 +150,10 @@ function judge(spec, { tools, text }) {
 
 /* --------------------------- 用例装载 --------------------------- */
 
-const dataset = JSON.parse(readFileSync(join(ROOT, 'fixtures/eval/semantic-cases.json'), 'utf8'));
+const datasetFile = heldout
+  ? 'fixtures/eval/heldout-cases.json'
+  : 'fixtures/eval/semantic-cases.json';
+const dataset = JSON.parse(readFileSync(join(ROOT, datasetFile), 'utf8'));
 
 /** 旧 4 条基线（用生成集的 spec 表达，供 --legacy 对比）。 */
 const LEGACY = [
@@ -163,7 +199,13 @@ const LEGACY = [
   },
 ];
 
-const cases = legacyOnly ? LEGACY : dataset.cases;
+// heldout 优先于 legacy（两个 flag 独立，heldout 走独立冻结集）。
+const cases = heldout ? dataset.cases : legacyOnly ? LEGACY : dataset.cases;
+const casesetLabel = heldout
+  ? 'held-out 泛化探针'
+  : legacyOnly
+    ? '旧 4 条基线'
+    : `${dataset.total} 条生成变体`;
 
 /* --------------------------- 前置自检 --------------------------- */
 let health;
@@ -190,9 +232,7 @@ const model = llm.model ?? '(unknown)';
 if (!asJson && !asMarkdown) {
   console.log(`\n=== 真模型语义评测（LLM 参与决策与评分）· ${BASE} ===`);
   console.log(`  模型：${model}（厂商：${llm.vendor ?? '未知'}）`);
-  console.log(
-    `  评测集：${dataset.dataset_version} · ${legacyOnly ? '旧 4 条基线' : `${dataset.total} 条生成变体`}`,
-  );
+  console.log(`  评测集：${dataset.dataset_version} · ${casesetLabel}`);
   console.log('  诚实边界：结果非确定性、不进 pnpm verify / CI 阻塞；非 scripted 骨架。\n');
 }
 
@@ -283,7 +323,7 @@ const summary = {
   model,
   base: BASE,
   dataset_version: dataset.dataset_version,
-  caseset: legacyOnly ? 'legacy-4' : 'generated',
+  caseset: heldout ? 'heldout' : legacyOnly ? 'legacy-4' : 'generated',
   total,
   passed, // expression（历史口径，不变）
   failed,
@@ -308,7 +348,7 @@ if (asJson) {
   const lines = [
     '# 真模型语义评测报告（LLM 参与决策与评分）',
     '',
-    `- 模型：\`${model}\` · 服务：\`${BASE}\` · 评测集 \`${dataset.dataset_version}\`（${legacyOnly ? '旧 4 条基线' : `${total} 条生成变体`}）`,
+    `- 模型：\`${model}\` · 服务：\`${BASE}\` · 评测集 \`${dataset.dataset_version}\`（${casesetLabel}）`,
     `- **Expression（答案对，历史口径）：${passed}/${total}（${(rate * 100).toFixed(1)}%）**`,
     `- **Reliance（依据可追溯到本轮工具结果）：${reliancePass}/${summary.reliance.applicable}（${(summary.reliance.rate * 100).toFixed(1)}%）** —— 仅数据答案类适用`,
     `- **E∧R（答对且依据对 / "right for the right reasons"）：${reliantPass}/${total}（${(summary.reliantRate * 100).toFixed(1)}%）**`,
