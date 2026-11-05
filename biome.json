@@ -16,7 +16,8 @@
       "!**/dist-test/**",
       "!**/fixtures/**",
       "!**/*.svg",
-      "!**/*.scss"
+      "!**/*.scss",
+      "!**/mdi-subset/**"
     ]
   },
   "formatter": {

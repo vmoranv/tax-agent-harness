@@ -1,4 +1,5 @@
 node_modules/
 .DS_Store
 dist/
-src/assets/mdi-subset/
+# 图标子集(css/woff/woff2)为冻结的生成物，vuetify.ts 硬 import，
+# 必须入库供干净 CI checkout 构建；不要再忽略 src/assets/mdi-subset/。
