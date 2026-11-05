@@ -1,0 +1,47 @@
+{
+  "name": "tax-agent-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "tsc -b --pretty",
+    "lint": "biome check apps/ packages/ tools/",
+    "format": "biome format --write apps/ packages/ tools/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dep:check": "depcruise --config .dependency-cruiser.cjs packages apps",
+    "build:test": "tsc -p packages/application/tsconfig.test.json",
+    "eval": "node tools/eval/run-eval.mjs",
+    "eval:json": "node tools/eval/run-eval.mjs --json",
+    "eval:report": "node tools/eval/run-eval.mjs --markdown",
+    "eval:cov": "node tools/eval/check-coverage.mjs",
+    "eval:gen": "node tools/eval/generate-dataset.mjs",
+    "qa:dead": "fallow dead-code || true",
+    "qa:cpd": "jscpd",
+    "qa:code": "pnpm qa:cpd && pnpm qa:dead",
+    "verify": "pnpm typecheck && pnpm lint && pnpm dep:check && pnpm test && pnpm build:test && pnpm eval:cov && pnpm eval",
+    "harness": "node --no-warnings=ExperimentalWarning apps/cli/dist/main.js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@types/node": "^22.20.5",
+    "@types/pg": "8.23.1",
+    "dependency-cruiser": "18.7.1",
+    "drizzle-kit": "0.31.11",
+    "fallow": "^3.38.1",
+    "jscpd": "^5.4.2",
+    "tsup": "9.0.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "drizzle-orm": "0.45.4",
+    "pg": "8.23.1",
+    "xlsx": "0.18.5"
+  }
+}

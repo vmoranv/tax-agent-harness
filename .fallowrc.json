@@ -1,0 +1,19 @@
+{
+  "$schema": "https://fallow.tools/schema.json",
+  "entry": [
+    "tools/eval/run-eval.mjs"
+  ],
+  "ignorePatterns": [
+    "**/dist-test/**",
+    "**/fixtures/**",
+    "**/test/**"
+  ],
+  "rules": {
+    "unused-files": "warn",
+    "unused-exports": "warn",
+    "unused-types": "warn",
+    "unused-dependencies": "warn",
+    "unused-class-members": "off"
+  },
+  "production": false
+}
