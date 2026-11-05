@@ -1,0 +1,37 @@
+name: 改进建议
+description: 提出能力/评测/文档改进（竞赛范围内）
+title: "[Feat] "
+labels: []
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 要解决什么问题
+      description: 先说清现状与不足，避免直接跳到方案
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 具体到模块/命令/数据结构；说明为何不违反 C-04 等赛题红线
+    validations:
+      required: true
+  - type: textarea
+    id: verify
+    attributes:
+      label: 如何验证
+      description: 门禁/评测/真模型实跑，给出可核对的判据
+      placeholder: "pnpm verify 全绿；eval:semantic:live / heldout 分数对比"
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 是否在初赛范围内
+      description: 赛题 C-14 明令避免过度设计（向量库/多 Agent 等）
+      options:
+        - 是，初赛范围内
+        - 否，属后续完善空间
+    validations:
+      required: true

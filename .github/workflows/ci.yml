@@ -1,0 +1,45 @@
+name: CI
+
+# 竞赛 Harness 的确定性门禁：全程本地、零外部服务、零密钥。
+# 与本地 `pnpm verify` 同一条链；verify 内含显式 pnpm build，干净环境
+# 不会出现 eval 依赖的 dist 缺失。
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      # pnpm build（全部 9 包 dist）+ typecheck + lint + dep:check + test
+      # + build:test + eval:cov + eval（含 244 例 + golden 50 条）。
+      - name: Verify (full gate)
+        run: pnpm verify

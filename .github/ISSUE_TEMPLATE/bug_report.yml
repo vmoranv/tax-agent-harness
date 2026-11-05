@@ -1,0 +1,48 @@
+name: Bug 报告
+description: 报告 Harness / 评测中台的确定性问题
+title: "[Bug] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请先本地跑 `pnpm verify` 确认可复现。本仓库为竞赛交付，门禁均为确定性本地检查。
+  - type: textarea
+    id: what
+    attributes:
+      label: 现象
+      description: 期望是什么、实际是什么、哪一步不对
+      placeholder: 例如：pnpm eval 的 L2 某例应为 PASS 实际 FAIL
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 命令 + 最小输入；涉及 /api/chat 的请附 runId
+      placeholder: |
+        1. pnpm install --frozen-lockfile
+        2. pnpm build
+        3. pnpm eval --layer=l2 --json
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: 环境
+      placeholder: "Node 22.x / pnpm 10.33.0 / Windows|Linux"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: 涉及层
+      options:
+        - 领域层 (domain)
+        - 应用层 (application)
+        - 适配器/运行时 (adapters / runtime)
+        - 评测中台 (eval / golden / semantic)
+        - API / Web
+        - 其他
+    validations:
+      required: true

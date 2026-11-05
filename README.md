@@ -235,6 +235,23 @@ node tools/eval/run-eval.mjs --layer=l1
 
 ---
 
+## 归档与工程基建状态（2026-11-05 审计）
+
+| 项 | 状态 | 说明 |
+|---|---|---|
+| CI | ✅ 已建 | `.github/workflows/ci.yml`：push/PR 到 master + 手动触发，`contents: read` 只读、无 secrets；`pnpm install --frozen-lockfile` → `pnpm verify` 全链（含显式 `pnpm build`，干净环境不缺 dist）|
+| issue / PR 模板 | ✅ 已建 | `.github/ISSUE_TEMPLATE/{bug_report,feature_request}.yml` + `PULL_REQUEST_TEMPLATE.md`（含 `pnpm verify`、真模型实跑、提交卫生勾选项）|
+| 本地门禁 | ✅ 规范 | `verify` = build + typecheck + lint + dep:check + test + build:test + eval:cov + eval；与 CI 同一条链 |
+| 提交卫生 | ✅ 干净 | 27 commit、单作者、conventional 前缀、无 fixup/wip；历史从未含 `.env`/`*.db`/`node_modules`/临时产物，当前 tree 无敏感文件（最大 216KB = pnpm-lock）|
+| `.gitignore` | ✅ 完整 | 含 `docs/`（历史已重写抹除、本地留存 25 文件）、`.env`/`*.key`、运行期 `data/*.db\|json\|mjs`、`artifacts/`、`.cache/`、赛题材料包 |
+| 工程配置 | ✅ 齐全 | biome / vitest / depcruise / jscpd / fallow / tsconfig / `engines.node>=22.5` / `packageManager=pnpm@10.33.0` / `.env.example` 占位 / docker-compose |
+| LICENSE / CONTRIBUTING / SECURITY / CODEOWNERS / CHANGELOG / .editorconfig | ⚪ 刻意不建 | 单人竞赛交付仓库（`private:true`、单作者、无协作者、赛题材料有版权）；「许可」节已声明仅供评审，不擅自选许可证或加协作流程 |
+| 已知瑕疵（不重写历史）| ⚠️ 2 处 | 历史重写副作用：`f9279c3` message 为 Dream-RSI 但内容仅剩 README+1；`3d934bf` message 有一处反引号被 shell 吞掉的空格。均为已 push 历史的文字瑕疵、代码内容正确，不为它 force-push 重写公开历史 |
+
+> 归档原则：补齐「CI + 模板 + 门禁一致性 + 忽略规则」这些有真实收益的项；
+> 协作/法务文档对单人交付属过度设计，按 C-14「别过度设计」不凑清单。
+---
+
 ## 许可
 
 比赛作品，仅供评审使用。所有企业、用户、金额与规则均为赛题提供的模拟数据。

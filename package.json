@@ -35,7 +35,7 @@
     "qa:dead": "fallow dead-code || true",
     "qa:cpd": "jscpd",
     "qa:code": "pnpm qa:cpd && pnpm qa:dead",
-    "verify": "pnpm typecheck && pnpm lint && pnpm dep:check && pnpm test && pnpm build:test && pnpm eval:cov && pnpm eval",
+    "verify": "pnpm build && pnpm typecheck && pnpm lint && pnpm dep:check && pnpm test && pnpm build:test && pnpm eval:cov && pnpm eval",
     "demo:semantic": "node tools/demo/online-semantic.mjs",
     "demo:semantic:live": "node tools/demo/online-semantic.mjs --live",
     "harness": "node --no-warnings=ExperimentalWarning apps/cli/dist/main.js"
