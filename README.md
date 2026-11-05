@@ -151,6 +151,7 @@ tools/
 | [`docs/spec/12-ddd-implementation-plan.md`](docs/spec/12-ddd-implementation-plan.md) | DDD 实施计划：逐包文件清单、签名、验收命令 |
 | [`docs/spec/13-fanout-prompts.md`](docs/spec/13-fanout-prompts.md) | Fanout 提示词模板 |
 | [`docs/spec/14-eval-dataset.md`](docs/spec/14-eval-dataset.md) | 评测集：244 条用例、真值算法、三层断言阶梯、覆盖矩阵 |
+| [`docs/spec/17-dream-rsi-research.md`](docs/spec/17-dream-rsi-research.md) | Dream-RSI 调研与适配性评估：机制、成立前提、与本项目明确错配不落地 |
 | [`docs/runbook.md`](docs/runbook.md) | 运行手册：安装、配置、命令、验证清单、FAQ |
 | [`docs/design-summary.md`](docs/design-summary.md) | 提交用设计说明 |
 | [`docs/demo-script.md`](docs/demo-script.md) | 演示分镜脚本 |
