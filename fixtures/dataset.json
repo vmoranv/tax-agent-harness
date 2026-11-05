@@ -1,0 +1,887 @@
+{
+ "enterprises": [
+  {
+   "id": "C001",
+   "legalName": "甲企业（比赛模拟）",
+   "aliases": [
+    "甲企业"
+   ]
+  },
+  {
+   "id": "C002",
+   "legalName": "乙企业（比赛模拟）",
+   "aliases": [
+    "乙企业"
+   ]
+  }
+ ],
+ "users": [
+  {
+   "id": "U001",
+   "displayName": "测试用户一"
+  },
+  {
+   "id": "U002",
+   "displayName": "测试用户二"
+  }
+ ],
+ "grants": [
+  {
+   "userId": "U001",
+   "enterpriseId": "C001",
+   "level": "read-write"
+  },
+  {
+   "userId": "U001",
+   "enterpriseId": "C002",
+   "level": "read-write"
+  },
+  {
+   "userId": "U002",
+   "enterpriseId": "C001",
+   "level": "read-only"
+  },
+  {
+   "userId": "U002",
+   "enterpriseId": "C002",
+   "level": "none"
+  }
+ ],
+ "invoices": [
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F011",
+   "issuedOn": "2026-08-01",
+   "sellerName": "青禾办公用品（模拟）",
+   "itemName": "复印纸、文件夹",
+   "amount": "460.50",
+   "purpose": null,
+   "remark": "八月办公采购"
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F012",
+   "issuedOn": "2026-08-03",
+   "sellerName": "澄宇设备（模拟）",
+   "itemName": "便携投影设备",
+   "amount": "1200.00",
+   "purpose": "采购演示用设备",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F013",
+   "issuedOn": "2026-08-06",
+   "sellerName": "星河印刷（模拟）",
+   "itemName": "宣传页印制",
+   "amount": "339.50",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F014",
+   "issuedOn": "2026-08-09",
+   "sellerName": "岭南商旅（模拟）",
+   "itemName": "住宿服务",
+   "amount": "999.99",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F015",
+   "issuedOn": "2026-08-12",
+   "sellerName": "云桥信息服务（模拟）",
+   "itemName": "系统维护服务",
+   "amount": "1000.00",
+   "purpose": "年度系统维护",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F016",
+   "issuedOn": "2026-08-16",
+   "sellerName": "平川物流（模拟）",
+   "itemName": "运输服务",
+   "amount": "1000.01",
+   "purpose": null,
+   "remark": "物品已签收"
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F017",
+   "issuedOn": "2026-08-20",
+   "sellerName": "栖山酒店（模拟）",
+   "itemName": "住宿服务",
+   "amount": "2680.00",
+   "purpose": "员工异地培训住宿",
+   "remark": "培训人员两名"
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F018",
+   "issuedOn": "2026-08-24",
+   "sellerName": "晓风快递（模拟）",
+   "itemName": "快递服务",
+   "amount": "185.60",
+   "purpose": "业务资料快递",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F019",
+   "issuedOn": "2026-08-28",
+   "sellerName": "山海物业（模拟）",
+   "itemName": "保洁服务",
+   "amount": "460.50",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F020",
+   "issuedOn": "2026-08-31",
+   "sellerName": "书林图文（模拟）",
+   "itemName": "装订、打印服务",
+   "amount": "720.25",
+   "purpose": "客户资料打印",
+   "remark": "月底资料整理"
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F001",
+   "issuedOn": "2026-09-01",
+   "sellerName": "青禾办公用品（模拟）",
+   "itemName": "办公文具",
+   "amount": "500.00",
+   "purpose": "购买办公文具",
+   "remark": "日常办公采购"
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F002",
+   "issuedOn": "2026-09-08",
+   "sellerName": "书林图文（模拟）",
+   "itemName": "复印纸、打印服务",
+   "amount": "800.00",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F004",
+   "issuedOn": "2026-09-10",
+   "sellerName": "岭南商旅（模拟）",
+   "itemName": "住宿服务",
+   "amount": "999.99",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F005",
+   "issuedOn": "2026-09-12",
+   "sellerName": "山海物业（模拟）",
+   "itemName": "保洁服务",
+   "amount": "1000.00",
+   "purpose": "办公场地清洁",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F003",
+   "issuedOn": "2026-09-16",
+   "sellerName": "晓风快递（模拟）",
+   "itemName": "快递服务",
+   "amount": "300.00",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F006",
+   "issuedOn": "2026-09-20",
+   "sellerName": "云桥信息服务（模拟）",
+   "itemName": "信息技术服务",
+   "amount": "1000.01",
+   "purpose": null,
+   "remark": "按月结算"
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F007",
+   "issuedOn": "2026-09-24",
+   "sellerName": "锦程会务（模拟）",
+   "itemName": "会议场地服务",
+   "amount": "1280.50",
+   "purpose": "客户演示场地租用",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F008",
+   "issuedOn": "2026-09-28",
+   "sellerName": "栖山酒店（模拟）",
+   "itemName": "住宿服务",
+   "amount": "2560.88",
+   "purpose": "员工出差住宿",
+   "remark": "项目交流出差"
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F009",
+   "issuedOn": "2026-09-29",
+   "sellerName": "澄宇设备（模拟）",
+   "itemName": "设备配件",
+   "amount": "680.68",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C001",
+   "invoiceNo": "F010",
+   "issuedOn": "2026-09-30",
+   "sellerName": "星河印刷（模拟）",
+   "itemName": "打印服务",
+   "amount": "500.00",
+   "purpose": "日常文件打印",
+   "remark": "月底资料整理"
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F011",
+   "issuedOn": "2026-08-01",
+   "sellerName": "书林图文（模拟）",
+   "itemName": "宣传册印刷",
+   "amount": "999.99",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F012",
+   "issuedOn": "2026-08-03",
+   "sellerName": "星河印刷（模拟）",
+   "itemName": "资料印刷",
+   "amount": "1000.00",
+   "purpose": "项目资料印刷",
+   "remark": "八月项目资料"
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F013",
+   "issuedOn": "2026-08-06",
+   "sellerName": "澄宇设备（模拟）",
+   "itemName": "办公设备",
+   "amount": "2200.01",
+   "purpose": "办公设备采购",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F014",
+   "issuedOn": "2026-08-09",
+   "sellerName": "晓风快递（模拟）",
+   "itemName": "快递服务",
+   "amount": "780.60",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F015",
+   "issuedOn": "2026-08-12",
+   "sellerName": "栖山酒店（模拟）",
+   "itemName": "住宿服务",
+   "amount": "1580.25",
+   "purpose": "客户展会住宿",
+   "remark": "两日住宿"
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F016",
+   "issuedOn": "2026-08-16",
+   "sellerName": "云桥信息服务（模拟）",
+   "itemName": "系统维护服务",
+   "amount": "1000.01",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F017",
+   "issuedOn": "2026-08-20",
+   "sellerName": "衡川咨询（模拟）",
+   "itemName": "管理咨询服务",
+   "amount": "3600.00",
+   "purpose": "项目咨询服务",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F018",
+   "issuedOn": "2026-08-24",
+   "sellerName": "青禾办公用品（模拟）",
+   "itemName": "办公耗材",
+   "amount": "999.99",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F019",
+   "issuedOn": "2026-08-28",
+   "sellerName": "平川物流（模拟）",
+   "itemName": "运输服务",
+   "amount": "245.80",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F020",
+   "issuedOn": "2026-08-31",
+   "sellerName": "锦程会务（模拟）",
+   "itemName": "培训资料服务",
+   "amount": "1260.40",
+   "purpose": "员工培训资料",
+   "remark": "月底培训"
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F001",
+   "issuedOn": "2026-09-01",
+   "sellerName": "青禾办公用品（模拟）",
+   "itemName": "办公耗材",
+   "amount": "600.00",
+   "purpose": null,
+   "remark": "部门采购"
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F002",
+   "issuedOn": "2026-09-08",
+   "sellerName": "星河印刷（模拟）",
+   "itemName": "宣传资料印刷",
+   "amount": "1000.00",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F004",
+   "issuedOn": "2026-09-10",
+   "sellerName": "岭南商旅（模拟）",
+   "itemName": "住宿服务",
+   "amount": "999.99",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F005",
+   "issuedOn": "2026-09-12",
+   "sellerName": "云桥信息服务（模拟）",
+   "itemName": "运维服务",
+   "amount": "1000.01",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F003",
+   "issuedOn": "2026-09-16",
+   "sellerName": "澄宇设备（模拟）",
+   "itemName": "展示用品",
+   "amount": "1500.00",
+   "purpose": "购买展示用品",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F006",
+   "issuedOn": "2026-09-20",
+   "sellerName": "栖山酒店（模拟）",
+   "itemName": "住宿服务",
+   "amount": "1280.50",
+   "purpose": null,
+   "remark": "两日住宿"
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F007",
+   "issuedOn": "2026-09-24",
+   "sellerName": "锦程会务（模拟）",
+   "itemName": "会议场地服务",
+   "amount": "3200.00",
+   "purpose": "客户交流会议场地",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F008",
+   "issuedOn": "2026-09-28",
+   "sellerName": "晓风快递（模拟）",
+   "itemName": "快递服务",
+   "amount": "600.00",
+   "purpose": "会议资料邮寄",
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F009",
+   "issuedOn": "2026-09-29",
+   "sellerName": "书林图文（模拟）",
+   "itemName": "打印、装订服务",
+   "amount": "486.75",
+   "purpose": null,
+   "remark": null
+  },
+  {
+   "enterpriseId": "C002",
+   "invoiceNo": "F010",
+   "issuedOn": "2026-09-30",
+   "sellerName": "衡川设备维护（模拟）",
+   "itemName": "设备维护服务",
+   "amount": "1999.99",
+   "purpose": "设备例行维护",
+   "remark": "月底维护"
+  }
+ ],
+ "bankTransactions": [
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T013",
+   "tradedOn": "2026-08-01",
+   "direction": "expense",
+   "amount": "600.00",
+   "counterparty": "青禾办公用品（模拟）",
+   "remark": "办公用品采购"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T014",
+   "tradedOn": "2026-08-03",
+   "direction": "expense",
+   "amount": "900.00",
+   "counterparty": "平川物流（模拟）",
+   "remark": "物流服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T021",
+   "tradedOn": "2026-08-04",
+   "direction": "income",
+   "amount": "5000.00",
+   "counterparty": "晨星项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T015",
+   "tradedOn": "2026-08-05",
+   "direction": "expense",
+   "amount": "100.00",
+   "counterparty": "禾川通信（模拟）",
+   "remark": "通信服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T016",
+   "tradedOn": "2026-08-08",
+   "direction": "expense",
+   "amount": "460.50",
+   "counterparty": "岭南商旅（模拟）",
+   "remark": "差旅服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T017",
+   "tradedOn": "2026-08-12",
+   "direction": "expense",
+   "amount": "1200.00",
+   "counterparty": "云桥信息服务（模拟）",
+   "remark": "系统服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T022",
+   "tradedOn": "2026-08-14",
+   "direction": "income",
+   "amount": "3600.00",
+   "counterparty": "远帆项目客户（模拟）",
+   "remark": "阶段服务收入"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T018",
+   "tradedOn": "2026-08-17",
+   "direction": "expense",
+   "amount": "999.99",
+   "counterparty": "山海物业（模拟）",
+   "remark": "物业服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T019",
+   "tradedOn": "2026-08-22",
+   "direction": "expense",
+   "amount": "1000.00",
+   "counterparty": "星河印刷（模拟）",
+   "remark": "资料印刷支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T023",
+   "tradedOn": "2026-08-25",
+   "direction": "income",
+   "amount": "1250.75",
+   "counterparty": "栖木项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T020",
+   "tradedOn": "2026-08-31",
+   "direction": "expense",
+   "amount": "460.50",
+   "counterparty": "澄宇设备（模拟）",
+   "remark": "设备采购支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T024",
+   "tradedOn": "2026-08-31",
+   "direction": "income",
+   "amount": "5000.00",
+   "counterparty": "清泉项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T001",
+   "tradedOn": "2026-09-01",
+   "direction": "expense",
+   "amount": "400.00",
+   "counterparty": "青禾办公用品（模拟）",
+   "remark": "办公用品采购"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T002",
+   "tradedOn": "2026-09-03",
+   "direction": "expense",
+   "amount": "500.00",
+   "counterparty": "平川物流（模拟）",
+   "remark": "物流服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T009",
+   "tradedOn": "2026-09-04",
+   "direction": "income",
+   "amount": "3000.00",
+   "counterparty": "晨星项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T003",
+   "tradedOn": "2026-09-05",
+   "direction": "expense",
+   "amount": "300.00",
+   "counterparty": "禾川通信（模拟）",
+   "remark": "通信服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T004",
+   "tradedOn": "2026-09-08",
+   "direction": "expense",
+   "amount": "800.25",
+   "counterparty": "岭南商旅（模拟）",
+   "remark": "差旅服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T005",
+   "tradedOn": "2026-09-12",
+   "direction": "expense",
+   "amount": "1000.00",
+   "counterparty": "云桥信息服务（模拟）",
+   "remark": "系统服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T010",
+   "tradedOn": "2026-09-14",
+   "direction": "income",
+   "amount": "5200.50",
+   "counterparty": "远帆项目客户（模拟）",
+   "remark": "阶段服务收入"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T006",
+   "tradedOn": "2026-09-17",
+   "direction": "expense",
+   "amount": "999.99",
+   "counterparty": "山海物业（模拟）",
+   "remark": "物业服务支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T007",
+   "tradedOn": "2026-09-22",
+   "direction": "expense",
+   "amount": "500.00",
+   "counterparty": "星河印刷（模拟）",
+   "remark": "资料印刷支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T011",
+   "tradedOn": "2026-09-25",
+   "direction": "income",
+   "amount": "1800.00",
+   "counterparty": "栖木项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T008",
+   "tradedOn": "2026-09-30",
+   "direction": "expense",
+   "amount": "2680.50",
+   "counterparty": "澄宇设备（模拟）",
+   "remark": "设备采购支出"
+  },
+  {
+   "enterpriseId": "C001",
+   "txnNo": "T012",
+   "tradedOn": "2026-09-30",
+   "direction": "income",
+   "amount": "3000.00",
+   "counterparty": "清泉项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T013",
+   "tradedOn": "2026-08-01",
+   "direction": "expense",
+   "amount": "950.00",
+   "counterparty": "青禾办公用品（模拟）",
+   "remark": "办公用品采购"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T014",
+   "tradedOn": "2026-08-03",
+   "direction": "expense",
+   "amount": "1000.00",
+   "counterparty": "平川物流（模拟）",
+   "remark": "物流服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T021",
+   "tradedOn": "2026-08-04",
+   "direction": "income",
+   "amount": "6000.00",
+   "counterparty": "晨星项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T015",
+   "tradedOn": "2026-08-05",
+   "direction": "expense",
+   "amount": "1300.00",
+   "counterparty": "禾川通信（模拟）",
+   "remark": "通信服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T016",
+   "tradedOn": "2026-08-08",
+   "direction": "expense",
+   "amount": "780.60",
+   "counterparty": "岭南商旅（模拟）",
+   "remark": "差旅服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T017",
+   "tradedOn": "2026-08-12",
+   "direction": "expense",
+   "amount": "1000.01",
+   "counterparty": "云桥信息服务（模拟）",
+   "remark": "系统服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T022",
+   "tradedOn": "2026-08-14",
+   "direction": "income",
+   "amount": "4800.25",
+   "counterparty": "远帆项目客户（模拟）",
+   "remark": "阶段服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T018",
+   "tradedOn": "2026-08-17",
+   "direction": "expense",
+   "amount": "999.99",
+   "counterparty": "山海物业（模拟）",
+   "remark": "物业服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T019",
+   "tradedOn": "2026-08-22",
+   "direction": "expense",
+   "amount": "950.00",
+   "counterparty": "星河印刷（模拟）",
+   "remark": "资料印刷支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T023",
+   "tradedOn": "2026-08-25",
+   "direction": "income",
+   "amount": "2000.00",
+   "counterparty": "栖木项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T020",
+   "tradedOn": "2026-08-31",
+   "direction": "expense",
+   "amount": "2360.50",
+   "counterparty": "澄宇设备（模拟）",
+   "remark": "设备采购支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T024",
+   "tradedOn": "2026-08-31",
+   "direction": "income",
+   "amount": "6000.00",
+   "counterparty": "清泉项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T001",
+   "tradedOn": "2026-09-01",
+   "direction": "expense",
+   "amount": "1000.00",
+   "counterparty": "青禾办公用品（模拟）",
+   "remark": "办公用品采购"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T002",
+   "tradedOn": "2026-09-03",
+   "direction": "expense",
+   "amount": "600.00",
+   "counterparty": "平川物流（模拟）",
+   "remark": "物流服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T009",
+   "tradedOn": "2026-09-04",
+   "direction": "income",
+   "amount": "4500.00",
+   "counterparty": "晨星项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T003",
+   "tradedOn": "2026-09-05",
+   "direction": "expense",
+   "amount": "400.00",
+   "counterparty": "禾川通信（模拟）",
+   "remark": "通信服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T004",
+   "tradedOn": "2026-09-08",
+   "direction": "expense",
+   "amount": "1000.00",
+   "counterparty": "岭南商旅（模拟）",
+   "remark": "差旅服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T005",
+   "tradedOn": "2026-09-12",
+   "direction": "expense",
+   "amount": "1500.50",
+   "counterparty": "云桥信息服务（模拟）",
+   "remark": "系统服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T010",
+   "tradedOn": "2026-09-14",
+   "direction": "income",
+   "amount": "3200.00",
+   "counterparty": "远帆项目客户（模拟）",
+   "remark": "阶段服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T006",
+   "tradedOn": "2026-09-17",
+   "direction": "expense",
+   "amount": "999.99",
+   "counterparty": "山海物业（模拟）",
+   "remark": "物业服务支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T007",
+   "tradedOn": "2026-09-22",
+   "direction": "expense",
+   "amount": "486.75",
+   "counterparty": "星河印刷（模拟）",
+   "remark": "资料印刷支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T011",
+   "tradedOn": "2026-09-25",
+   "direction": "income",
+   "amount": "1500.75",
+   "counterparty": "栖木项目客户（模拟）",
+   "remark": "项目服务收入"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T008",
+   "tradedOn": "2026-09-30",
+   "direction": "expense",
+   "amount": "2100.00",
+   "counterparty": "澄宇设备（模拟）",
+   "remark": "设备采购支出"
+  },
+  {
+   "enterpriseId": "C002",
+   "txnNo": "T012",
+   "tradedOn": "2026-09-30",
+   "direction": "income",
+   "amount": "4500.00",
+   "counterparty": "清泉项目客户（模拟）",
+   "remark": "项目服务收入"
+  }
+ ],
+ "rules": []
+}

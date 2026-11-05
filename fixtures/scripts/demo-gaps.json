@@ -1,0 +1,6 @@
+{
+  "turns": [
+    [{ "type": "tool-call", "name": "find_purpose_gaps", "args": { "month": "2026-09" } }],
+    [{ "type": "text", "content": "乙企业 2026 年 9 月有 3 张发票必须填用途但还空着：F002、F005、F006。另有 3 张金额低于 1000 元，按规则可以不填。" }]
+  ]
+}

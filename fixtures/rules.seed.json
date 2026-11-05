@@ -1,0 +1,66 @@
+{
+  "_comment": "赛题《业务规则》的五条规则。obligation 是可执行谓词，与正文一起冻结在同一版本里。",
+  "rules": [
+    {
+      "code": "R001",
+      "version": "1.0",
+      "title": "金额统计说明",
+      "category": "amount-guidance",
+      "scope": { "kind": "global" },
+      "effectiveFrom": "2026-01-01",
+      "status": "enabled",
+      "obligation": null,
+      "body": "1. 发票金额表示价税合计，不拆税额。\n2. 银行收入和支出按收支方向分别相加，不把收入计入支出，也不用收入减支出代替支出总额。\n3. 金额单位为元，保留两位小数；程序使用整数分计算。\n4. 月份按发票日期或银行交易日期确定；用户没说清月份时应先追问，不能默认当前月份。\n5. 发票总额和银行支出可以不同，不能因金额不同就判断错误或已付款。\n6. 成功查询但没有记录时合计为 0.00 元并说明没有记录；查询失败或无权限不等于没有记录。",
+      "supersedes": null
+    },
+    {
+      "code": "R002",
+      "version": "1.0",
+      "title": "甲企业发票用途规则",
+      "category": "purpose-requirement",
+      "scope": { "kind": "enterprise", "enterpriseId": "C001" },
+      "effectiveFrom": "2026-08-01",
+      "status": "disabled",
+      "obligation": { "kind": "purpose_required_at_least", "thresholdInclTax": "1000.00" },
+      "body": "旧版要求：单张发票金额大于或等于 1000.00 元时必须填写用途；低于此金额可以不填。空白或只有空格视为未填写。\n本版保留用于检查版本管理，已于 2026-09 起被 2.0 版取代。",
+      "supersedes": null,
+      "supersededBy": "2.0"
+    },
+    {
+      "code": "R002",
+      "version": "2.0",
+      "title": "甲企业发票用途规则",
+      "category": "purpose-requirement",
+      "scope": { "kind": "enterprise", "enterpriseId": "C001" },
+      "effectiveFrom": "2026-09-01",
+      "status": "enabled",
+      "obligation": { "kind": "purpose_required_all" },
+      "body": "从 2026 年 9 月起，甲企业每张发票都必须填写用途，不设置金额门槛。空白或只有空格视为未填写，备注不能代替用途。\n检查时查询当前发票，列出未填用途的编号。用户补充用途时，应确认企业、发票和内容，检查修改权限，保存后再查询核对。\n本版取代已停用的 1.0 版。",
+      "supersedes": "1.0"
+    },
+    {
+      "code": "R003",
+      "version": "1.0",
+      "title": "乙企业发票用途规则",
+      "category": "purpose-requirement",
+      "scope": { "kind": "enterprise", "enterpriseId": "C002" },
+      "effectiveFrom": "2026-08-01",
+      "status": "enabled",
+      "obligation": { "kind": "purpose_required_at_least", "thresholdInclTax": "1000.00" },
+      "body": "单张发票金额大于或等于 1000.00 元时必须填写用途，等于 1000 元也在范围内；低于此金额可以不填。空白或只有空格视为未填写，备注不能代替用途。\n不能套用甲企业「每张必填」的规则，也不能把允许不填的发票列为不符合要求。\n用户可以主动补充低于门槛发票的用途，但仍须具备修改权限。",
+      "supersedes": null
+    },
+    {
+      "code": "R004",
+      "version": "1.0",
+      "title": "银行资料说明",
+      "category": "bank-guidance",
+      "scope": { "kind": "global" },
+      "effectiveFrom": "2026-01-01",
+      "status": "enabled",
+      "obligation": null,
+      "body": "• 企业编号和银行记录编号共同确定一条记录，相同编号可以出现在不同企业中。\n• 交易日期用于确定查询年份和月份。\n• 收支方向分为收入和支出，金额均为正数；支出不再另外减一次负号。\n• 对方名称和备注仅说明该条记录，不能据此推断某张发票已经付款。\n银行资料全部只读，不允许新增、删除或修改。",
+      "supersedes": null
+    }
+  ]
+}

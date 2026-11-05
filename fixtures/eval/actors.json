@@ -1,0 +1,19 @@
+{
+  "_comment": "权限矩阵来自《示例数据》「企业与用户」页。只读，不得由对话更改。",
+  "users": [
+    {
+      "userId": "U001",
+      "name": "测试用户一",
+      "grants": { "C001": "read-write", "C002": "read-write" }
+    },
+    {
+      "userId": "U002",
+      "name": "测试用户二",
+      "grants": { "C001": "read-only", "C002": "none" }
+    }
+  ],
+  "enterprises": [
+    { "enterpriseId": "C001", "name": "甲企业（比赛模拟）", "aliases": ["甲企业"] },
+    { "enterpriseId": "C002", "name": "乙企业（比赛模拟）", "aliases": ["乙企业"] }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "_comment": "假模型演示脚本：不调真实 LLM 也能跑完整流程",
+  "scenarios": {
+    "s1-query": [
+      [
+        {
+          "type": "tool-call",
+          "name": "summarize_enterprise_month",
+          "args": { "enterpriseId": "C001", "month": "2026-09" }
+        }
+      ],
+      [
+        {
+          "type": "text",
+          "content": "甲企业 2026 年 9 月：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。"
+        }
+      ]
+    ],
+    "s3-gaps": [
+      [
+        {
+          "type": "tool-call",
+          "name": "find_purpose_gaps",
+          "args": { "enterpriseId": "C002", "month": "2026-09" }
+        }
+      ],
+      [
+        {
+          "type": "text",
+          "content": "乙企业 2026 年 9 月有 3 张发票必须填用途但还空着：F002、F005、F006。另有 F001、F004、F009 金额低于 1000 元，按规则可以不填。依据《乙企业发票用途规则》1.0 版。"
+        }
+      ]
+    ]
+  }
+}

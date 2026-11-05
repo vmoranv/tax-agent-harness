@@ -1,0 +1,50 @@
+[
+  {
+    "code": "R001",
+    "version": "1.0",
+    "title": "金额统计说明",
+    "category": "amount-guidance",
+    "scope": "ALL",
+    "effectiveFrom": "2026-01-01",
+    "status": "enabled"
+  },
+  {
+    "code": "R002",
+    "version": "1.0",
+    "title": "甲企业发票用途规则",
+    "category": "purpose-requirement",
+    "scope": "C001",
+    "effectiveFrom": "2026-08-01",
+    "status": "disabled",
+    "obligation": { "kind": "purpose_required_at_least", "thresholdCents": 100000 }
+  },
+  {
+    "code": "R002",
+    "version": "2.0",
+    "title": "甲企业发票用途规则",
+    "category": "purpose-requirement",
+    "scope": "C001",
+    "effectiveFrom": "2026-09-01",
+    "status": "enabled",
+    "obligation": { "kind": "purpose_required_all" }
+  },
+  {
+    "code": "R003",
+    "version": "1.0",
+    "title": "乙企业发票用途规则",
+    "category": "purpose-requirement",
+    "scope": "C002",
+    "effectiveFrom": "2026-08-01",
+    "status": "enabled",
+    "obligation": { "kind": "purpose_required_at_least", "thresholdCents": 100000 }
+  },
+  {
+    "code": "R004",
+    "version": "1.0",
+    "title": "银行资料说明",
+    "category": "bank-guidance",
+    "scope": "ALL",
+    "effectiveFrom": "2026-01-01",
+    "status": "enabled"
+  }
+]

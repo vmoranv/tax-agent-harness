@@ -1,0 +1,7 @@
+{
+  "_comment": "脚本化演示回合：不调模型，直接驱动工具，用于验证链路与 CI",
+  "turns": [
+    [{ "type": "tool-call", "name": "summarize_enterprise_month", "args": { "month": "2026-09" } }],
+    [{ "type": "text", "content": "甲企业 2026 年 9 月：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。" }]
+  ]
+}
