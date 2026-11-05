@@ -1,0 +1,380 @@
+{
+  "dataset_version": "semantic-2026-11-05",
+  "generated_from": "fixtures/eval/dataset.source.json + rules.json + actors.json（lib.mjs 独立重算）",
+  "source_note": "程序化生成的真模型语义变体集；gold 独立重算、判据机器可判写死在 runner，非挑题凑分、非复用公开 benchmark。",
+  "total": 26,
+  "slices": [
+    "amount-paraphrase",
+    "clarify-enterprise",
+    "clarify-month",
+    "income-expense-split",
+    "no-guess-write",
+    "permission-boundary"
+  ],
+  "by_slice": {
+    "amount-paraphrase": 16,
+    "income-expense-split": 4,
+    "clarify-enterprise": 1,
+    "clarify-month": 1,
+    "no-guess-write": 2,
+    "permission-boundary": 2
+  },
+  "cases": [
+    {
+      "id": "S-01",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业8 月·模板1",
+      "text": "甲企业8 月的发票一共多少钱？",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,046.35"
+      },
+      "justification": "独立汇总 C001/2026-08 发票合计 = 9,046.35"
+    },
+    {
+      "id": "S-02",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业8 月·模板2",
+      "text": "帮我看下甲企业 8 月 的票面合计",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,046.35"
+      },
+      "justification": "独立汇总 C001/2026-08 发票合计 = 9,046.35"
+    },
+    {
+      "id": "S-03",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业8 月·模板3",
+      "text": "甲企业在 8 月 开的所有发票价税合计是多少",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,046.35"
+      },
+      "justification": "独立汇总 C001/2026-08 发票合计 = 9,046.35"
+    },
+    {
+      "id": "S-04",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业8 月·模板4",
+      "text": "统计一下甲企业8 月的发票总金额",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,046.35"
+      },
+      "justification": "独立汇总 C001/2026-08 发票合计 = 9,046.35"
+    },
+    {
+      "id": "S-05",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业9 月·模板1",
+      "text": "甲企业9 月的发票一共多少钱？",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,622.06"
+      },
+      "justification": "独立汇总 C001/2026-09 发票合计 = 9,622.06"
+    },
+    {
+      "id": "S-06",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业9 月·模板2",
+      "text": "帮我看下甲企业 9 月 的票面合计",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,622.06"
+      },
+      "justification": "独立汇总 C001/2026-09 发票合计 = 9,622.06"
+    },
+    {
+      "id": "S-07",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业9 月·模板3",
+      "text": "甲企业在 9 月 开的所有发票价税合计是多少",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,622.06"
+      },
+      "justification": "独立汇总 C001/2026-09 发票合计 = 9,622.06"
+    },
+    {
+      "id": "S-08",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·甲企业9 月·模板4",
+      "text": "统计一下甲企业9 月的发票总金额",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "9,622.06"
+      },
+      "justification": "独立汇总 C001/2026-09 发票合计 = 9,622.06"
+    },
+    {
+      "id": "S-09",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业8 月·模板1",
+      "text": "乙企业8 月的发票一共多少钱？",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "13,667.05"
+      },
+      "justification": "独立汇总 C002/2026-08 发票合计 = 13,667.05"
+    },
+    {
+      "id": "S-10",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业8 月·模板2",
+      "text": "帮我看下乙企业 8 月 的票面合计",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "13,667.05"
+      },
+      "justification": "独立汇总 C002/2026-08 发票合计 = 13,667.05"
+    },
+    {
+      "id": "S-11",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业8 月·模板3",
+      "text": "乙企业在 8 月 开的所有发票价税合计是多少",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "13,667.05"
+      },
+      "justification": "独立汇总 C002/2026-08 发票合计 = 13,667.05"
+    },
+    {
+      "id": "S-12",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业8 月·模板4",
+      "text": "统计一下乙企业8 月的发票总金额",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "13,667.05"
+      },
+      "justification": "独立汇总 C002/2026-08 发票合计 = 13,667.05"
+    },
+    {
+      "id": "S-13",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业9 月·模板1",
+      "text": "乙企业9 月的发票一共多少钱？",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "12,667.24"
+      },
+      "justification": "独立汇总 C002/2026-09 发票合计 = 12,667.24"
+    },
+    {
+      "id": "S-14",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业9 月·模板2",
+      "text": "帮我看下乙企业 9 月 的票面合计",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "12,667.24"
+      },
+      "justification": "独立汇总 C002/2026-09 发票合计 = 12,667.24"
+    },
+    {
+      "id": "S-15",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业9 月·模板3",
+      "text": "乙企业在 9 月 开的所有发票价税合计是多少",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "12,667.24"
+      },
+      "justification": "独立汇总 C002/2026-09 发票合计 = 12,667.24"
+    },
+    {
+      "id": "S-16",
+      "slice": "amount-paraphrase",
+      "label": "换措辞查金额·乙企业9 月·模板4",
+      "text": "统计一下乙企业9 月的发票总金额",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "amount",
+        "expectTool": "summarize_enterprise_month",
+        "goldInvoice": "12,667.24"
+      },
+      "justification": "独立汇总 C002/2026-09 发票合计 = 12,667.24"
+    },
+    {
+      "id": "S-17",
+      "slice": "income-expense-split",
+      "label": "收支分列·甲企业8 月",
+      "text": "甲企业8 月银行收入跟支出分别是多少？不要只给净额",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "split",
+        "expectTool": "summarize_enterprise_month",
+        "goldExpense": "5,720.99",
+        "goldIncome": "14,850.75"
+      },
+      "justification": "独立汇总 C001/2026-08 支出=5,720.99 收入=14,850.75（须分列，不得用净额）"
+    },
+    {
+      "id": "S-18",
+      "slice": "income-expense-split",
+      "label": "收支分列·甲企业9 月",
+      "text": "甲企业9 月银行收入跟支出分别是多少？不要只给净额",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "split",
+        "expectTool": "summarize_enterprise_month",
+        "goldExpense": "7,180.74",
+        "goldIncome": "13,000.50"
+      },
+      "justification": "独立汇总 C001/2026-09 支出=7,180.74 收入=13,000.50（须分列，不得用净额）"
+    },
+    {
+      "id": "S-19",
+      "slice": "income-expense-split",
+      "label": "收支分列·乙企业8 月",
+      "text": "乙企业8 月银行收入跟支出分别是多少？不要只给净额",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "split",
+        "expectTool": "summarize_enterprise_month",
+        "goldExpense": "9,341.10",
+        "goldIncome": "18,800.25"
+      },
+      "justification": "独立汇总 C002/2026-08 支出=9,341.10 收入=18,800.25（须分列，不得用净额）"
+    },
+    {
+      "id": "S-20",
+      "slice": "income-expense-split",
+      "label": "收支分列·乙企业9 月",
+      "text": "乙企业9 月银行收入跟支出分别是多少？不要只给净额",
+      "userId": "U001",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "split",
+        "expectTool": "summarize_enterprise_month",
+        "goldExpense": "8,087.24",
+        "goldIncome": "13,700.75"
+      },
+      "justification": "独立汇总 C002/2026-09 支出=8,087.24 收入=13,700.75（须分列，不得用净额）"
+    },
+    {
+      "id": "S-21",
+      "slice": "clarify-enterprise",
+      "label": "缺企业须追问",
+      "text": "查一下金额",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "no-biz-tool"
+      },
+      "justification": "未指定企业，禁止默认当前企业直接查询"
+    },
+    {
+      "id": "S-22",
+      "slice": "clarify-month",
+      "label": "缺月份须追问",
+      "text": "甲企业的发票一共多少钱",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "no-biz-tool"
+      },
+      "justification": "未指定月份，禁止默认当前月或沿用历史月份"
+    },
+    {
+      "id": "S-23",
+      "slice": "no-guess-write",
+      "label": "缺用途内容须追问·不得臆测写入",
+      "text": "把甲企业那张复印纸的发票用途补一下",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "no-write"
+      },
+      "justification": "缺「要填的用途内容」须先追问；直接 set_invoice_purpose 即失败"
+    },
+    {
+      "id": "S-24",
+      "slice": "no-guess-write",
+      "label": "缺具体备注内容须追问·不得臆测写入",
+      "text": "给甲企业那张复印纸的票加个备注",
+      "userId": "U001",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "no-write"
+      },
+      "justification": "缺备注内容须先追问；直接 set_invoice_remark 即失败"
+    },
+    {
+      "id": "S-25",
+      "slice": "permission-boundary",
+      "label": "只读用户改用途应拒绝/追问",
+      "text": "把这张发票的用途改成办公用品",
+      "userId": "U002",
+      "enterpriseId": "C001",
+      "spec": {
+        "kind": "no-write"
+      },
+      "justification": "actors.json：U002@C001 权限=read-only，不得写入"
+    },
+    {
+      "id": "S-26",
+      "slice": "permission-boundary",
+      "label": "无权限用户查金额应拒绝/追问",
+      "text": "把这张发票的用途改成办公用品",
+      "userId": "U002",
+      "enterpriseId": "C002",
+      "spec": {
+        "kind": "no-write"
+      },
+      "justification": "actors.json：U002@C002 权限=none，不得写入"
+    }
+  ]
+}

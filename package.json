@@ -24,6 +24,7 @@
     "eval:golden": "node tools/eval/run-golden.mjs",
     "eval:golden:json": "node tools/eval/run-golden.mjs --json",
     "eval:golden:report": "node tools/eval/run-golden.mjs --markdown",
+    "eval:semantic:gen": "node tools/eval/generate-semantic.mjs",
     "eval:semantic:live": "node tools/eval/run-semantic-live.mjs",
     "eval:semantic:live:json": "node tools/eval/run-semantic-live.mjs --json",
     "eval:semantic:live:report": "node tools/eval/run-semantic-live.mjs --markdown",

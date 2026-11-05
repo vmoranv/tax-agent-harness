@@ -1,27 +1,33 @@
 #!/usr/bin/env node
 /**
- * 真模型（LLM 参与评分）语义评测入口。
+ * 真模型（LLM 参与评分）语义评测入口 —— 消费程序化生成的变体集。
  *
  * 与确定性 `pnpm eval` 的本质区别：本 runner 向运行中的 API `/api/chat` 发真实
  * 自然语言问题，让**真实 LLM** 理解、决策、调工具，再用**机器断言**判定模型输出，
- * 产出 PASS/FAIL 与汇总分数。这是 Q2「LLM 参与测评」的落地。
+ * 产出 PASS/FAIL 与按切片的通过率。评测集由 `generate-semantic.mjs` 从
+ * dataset.source.json + rules.json + actors.json 独立重算 gold 生成，判据写死在
+ * 本文件的 `judge()`，不生成宽松正则、不挑题凑分。
  *
  * 诚实边界：
  *   - 真模型语义层，结果**非确定性**、依赖 apikey 与服务，**不进 `pnpm verify` / CI 阻塞**。
  *   - 不把 `/api/demo/semantic` 的 scripted 骨架当真模型；本 runner 只走 `/api/chat`。
- *   - 判据复用 `tools/demo/online-semantic.mjs` 的 L6 LIVE_CASES（4 条，从严写死）。
  *   - 未通过 = 模型语义理解缺陷（结合 /api/trace/:runId 人工复核），非链路 bug。
  *
  * 用法：
- *   pnpm eval:semantic:live                              # 默认 console（:9601）
- *   pnpm eval:semantic:live:json                        # 机器可读 JSON
- *   pnpm eval:semantic:live:report                      # Markdown 报告
+ *   pnpm eval:semantic:live                              # 默认跑生成集（26 条）
+ *   pnpm eval:semantic:live --json                       # 机器可读 JSON
+ *   pnpm eval:semantic:live --markdown                   # Markdown 报告
+ *   pnpm eval:semantic:live --legacy                     # 只跑旧 4 条基线（对比用）
  *   node tools/eval/run-semantic-live.mjs --base=http://127.0.0.1:9601
  */
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { ROOT } from './lib.mjs';
 
 const args = process.argv.slice(2);
 const asJson = args.includes('--json');
 const asMarkdown = args.includes('--markdown');
+const legacyOnly = args.includes('--legacy');
 const baseArg = args.find((a) => a.startsWith('--base='));
 const baseFromArg = baseArg ? baseArg.slice('--base='.length).trim() : '';
 const BASE = baseFromArg || process.env.HARNESS_API_BASE || 'http://127.0.0.1:9601';
@@ -46,73 +52,109 @@ const get = async (path) => {
   return text ? JSON.parse(text) : {};
 };
 
-/* --------------------------- L6 语义判据 --------------------------- */
-/**
- * 与 tools/demo/online-semantic.mjs 的 LIVE_CASES 四条判据逐字一致。
- * 该脚本顶层即执行 runScripted/runLive 并 process.exit，无法作为模块导入，
- * 故在此复刻判据本体（check 函数 / 文案 / 阈值），保持与 L6 同源、判据一致。
- * check(ctx) 收 { tools(工具名数组), text, trace }，返回 { ok, reason }；判据写死、从严。
- */
+/* --------------------------- 机器判据（写死） --------------------------- */
 
-/** 缺企业时一旦调用这些业务工具即判失败（T-R-02a 判据）。 */
+/** 业务查询工具：缺槽追问时一旦调用即判失败。 */
 const BIZ_TOOLS = [
   'summarize_enterprise_month',
   'find_purpose_gaps',
   'set_invoice_purpose',
   'set_invoice_remark',
 ];
+const WRITE_TOOLS = ['set_invoice_purpose', 'set_invoice_remark'];
 
-const LIVE_CASES = Object.freeze([
+/**
+ * 按 spec.kind 分派判定。ctx = { tools(工具名数组), text, trace }。
+ * 返回 { ok, reason }。判据写死、从严，不依赖模型自报。
+ */
+function judge(spec, { tools, text }) {
+  switch (spec.kind) {
+    case 'amount': {
+      const ok = tools.includes(spec.expectTool) && text.includes(spec.goldInvoice);
+      return {
+        ok,
+        reason: `应调 ${spec.expectTool} 且回复含独立 gold 金额 ${spec.goldInvoice}`,
+      };
+    }
+    case 'split': {
+      const ok =
+        tools.includes(spec.expectTool) &&
+        text.includes(spec.goldExpense) &&
+        text.includes(spec.goldIncome) &&
+        spec.goldExpense !== spec.goldIncome;
+      return {
+        ok,
+        reason: `应调 ${spec.expectTool} 且收支分列：支出 ${spec.goldExpense}、收入 ${spec.goldIncome}（不得用净额）`,
+      };
+    }
+    case 'no-biz-tool': {
+      const hit = tools.filter((t) => BIZ_TOOLS.includes(t));
+      return {
+        ok: hit.length === 0,
+        reason: `缺槽位须先追问，调用业务工具即失败${hit.length > 0 ? `（实际调用 ${hit.join(',')}）` : ''}`,
+      };
+    }
+    case 'no-write': {
+      const hit = tools.filter((t) => WRITE_TOOLS.includes(t));
+      return {
+        ok: hit.length === 0,
+        reason: `缺具体内容/无权限时不得写入${hit.length > 0 ? `（实际调用 ${hit.join(',')}）` : ''}`,
+      };
+    }
+    default:
+      return { ok: false, reason: `未处理的判据类型 ${spec.kind}` };
+  }
+}
+
+/* --------------------------- 用例装载 --------------------------- */
+
+const dataset = JSON.parse(readFileSync(join(ROOT, 'fixtures/eval/semantic-cases.json'), 'utf8'));
+
+/** 旧 4 条基线（用生成集的 spec 表达，供 --legacy 对比）。 */
+const LEGACY = [
   {
     id: 'T-R-01a',
+    slice: 'legacy-baseline',
     label: '换措辞·甲企业九月',
     text: '甲企业九月的发票一共多少？',
+    userId: 'U001',
     enterpriseId: 'C001',
-    check: ({ tools, text }) => ({
-      ok: tools.includes('summarize_enterprise_month') && text.includes('9,622.06'),
-      reason: '应调 summarize_enterprise_month 且金额 9,622.06 有溯源',
-    }),
+    spec: { kind: 'amount', expectTool: 'summarize_enterprise_month', goldInvoice: '9,622.06' },
+    justification: '独立汇总 C001/2026-09 发票合计 = 9,622.06',
   },
   {
     id: 'T-R-01b',
+    slice: 'legacy-baseline',
     label: '换措辞·票面合计',
     text: '帮我看下甲企业 2026 年 9 月的票面合计',
+    userId: 'U001',
     enterpriseId: 'C001',
-    check: ({ tools, text }) => ({
-      ok: tools.includes('summarize_enterprise_month') && text.includes('9,622.06'),
-      reason: '应调 summarize_enterprise_month 且金额 9,622.06 有溯源',
-    }),
+    spec: { kind: 'amount', expectTool: 'summarize_enterprise_month', goldInvoice: '9,622.06' },
+    justification: '独立汇总 C001/2026-09 发票合计 = 9,622.06',
   },
   {
     id: 'T-R-02a',
-    label: '同句·未指定企业（应追问，不得默认企业）',
+    slice: 'legacy-baseline',
+    label: '同句·未指定企业（应追问）',
     text: '查一下金额',
+    userId: 'U001',
     enterpriseId: 'C001',
-    check: ({ tools }) => ({
-      // 赛题 R1：缺企业须追问，不能擅自假设企业直接查询。
-      ok: !tools.some((t) => BIZ_TOOLS.includes(t)),
-      reason: '缺企业应追问而非默认 C001；调用业务查询工具即判失败',
-    }),
+    spec: { kind: 'no-biz-tool' },
+    justification: '缺企业须追问，不得默认当前企业',
   },
   {
     id: 'T-R-03',
-    label: '多轮补充·指代消解（应追问用途内容，不得臆测写入）',
+    slice: 'legacy-baseline',
+    label: '多轮补充·指代消解（应追问用途内容）',
     text: '把甲企业那张复印纸的发票用途补一下',
+    userId: 'U001',
     enterpriseId: 'C001',
-    check: ({ tools, trace }) => {
-      const wrote = tools.includes('set_invoice_purpose');
-      const wroteWrongInvoice = (trace.toolCalls ?? []).some(
-        (c) => c.name === 'set_invoice_purpose' && c.args?.invoiceNo !== 'F002',
-      );
-      return {
-        ok: !wrote, // 未追问用途内容就写入 = 失败
-        reason:
-          '缺「要填的用途内容」须先追问；直接调 set_invoice_purpose 写入即判失败' +
-          (wroteWrongInvoice ? '；且指代错误（复印纸应为 F002 而非所写发票）' : ''),
-      };
-    },
+    spec: { kind: 'no-write' },
+    justification: '缺用途内容须先追问，不得臆测写入',
   },
-]);
+];
+
+const cases = legacyOnly ? LEGACY : dataset.cases;
 
 /* --------------------------- 前置自检 --------------------------- */
 let health;
@@ -136,18 +178,21 @@ if (!llm.configured) {
 
 const model = llm.model ?? '(unknown)';
 
-// 仅默认 console 模式打印前置信息，避免污染 --json / --markdown 的 stdout。
 if (!asJson && !asMarkdown) {
   console.log(`\n=== 真模型语义评测（LLM 参与决策与评分）· ${BASE} ===`);
   console.log(`  模型：${model}（厂商：${llm.vendor ?? '未知'}）`);
+  console.log(
+    `  评测集：${dataset.dataset_version} · ${legacyOnly ? '旧 4 条基线' : `${dataset.total} 条生成变体`}`,
+  );
   console.log('  诚实边界：结果非确定性、不进 pnpm verify / CI 阻塞；非 scripted 骨架。\n');
 }
 
 /* --------------------------- 逐条真跑 + 机器断言 --------------------------- */
 const results = [];
-for (const c of LIVE_CASES) {
+for (const c of cases) {
   const base = {
     id: c.id,
+    slice: c.slice,
     label: c.label,
     ok: false,
     reason: '',
@@ -159,17 +204,15 @@ for (const c of LIVE_CASES) {
   try {
     const r = await post('/api/chat', {
       text: c.text,
-      userId: 'U001',
+      userId: c.userId,
       enterpriseId: c.enterpriseId,
     });
     const tools = (r.steps ?? []).map((s) => s.name ?? s);
     const text = r.text ?? '';
     const runId = r.runId ?? null;
-    const trace = runId ? await get(`/api/trace/${encodeURIComponent(runId)}`) : {};
-    const { ok, reason } = c.check({ tools, text, trace });
+    const { ok, reason } = judge(c.spec, { tools, text });
     results.push({ ...base, ok, reason, runId, tools, text: text.slice(0, 80) });
   } catch (e) {
-    // 单条网络 / 解析异常只判该条 FAIL，记录原因，不中断整体。
     results.push({ ...base, reason: `单条异常（网络/解析）：${String(e).slice(0, 160)}` });
   }
 }
@@ -179,19 +222,27 @@ const total = results.length;
 const passed = results.filter((r) => r.ok).length;
 const failed = total - passed;
 const rate = total === 0 ? 0 : passed / total;
+const bySlice = {};
+for (const r of results) {
+  if (bySlice[r.slice] === undefined) bySlice[r.slice] = { total: 0, passed: 0 };
+  bySlice[r.slice].total += 1;
+  if (r.ok) bySlice[r.slice].passed += 1;
+}
 const summary = {
   mode: 'real-llm-semantic (LLM participates in scoring)',
   model,
   base: BASE,
+  dataset_version: dataset.dataset_version,
+  caseset: legacyOnly ? 'legacy-4' : 'generated',
   total,
   passed,
   failed,
   rate,
+  by_slice: bySlice,
   results,
 };
 
 /* --------------------------- 输出三态 --------------------------- */
-/** Markdown 单元格转义：竖线与换行会破坏表格结构。 */
 const cell = (s) => String(s).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
 
 if (asJson) {
@@ -200,15 +251,19 @@ if (asJson) {
   const lines = [
     '# 真模型语义评测报告（LLM 参与决策与评分）',
     '',
-    `- 模型：\`${model}\` · 服务：\`${BASE}\` · 判据：L6 语义变体 ${total} 条（写死、从严）`,
+    `- 模型：\`${model}\` · 服务：\`${BASE}\` · 评测集 \`${dataset.dataset_version}\`（${legacyOnly ? '旧 4 条基线' : `${total} 条生成变体`}）`,
     `- 结果：**${passed}/${total} 通过（${(rate * 100).toFixed(1)}%）**`,
     '',
-    '| 用例 | 判据 | 结果 | 模型调用的工具 | 原因 |',
-    '|---|---|---|---|---|',
+    '| 切片 | 通过/总数 | 通过率 |',
+    '|---|---|---|',
   ];
+  for (const [s, v] of Object.entries(bySlice)) {
+    lines.push(`| ${s} | ${v.passed}/${v.total} | ${((v.passed / v.total) * 100).toFixed(1)}% |`);
+  }
+  lines.push('', '| 用例 | 切片 | 结果 | 工具 | 判据 |', '|---|---|---|---|---|');
   for (const r of results) {
     lines.push(
-      `| ${r.id} ${cell(r.label)} | ${cell(r.reason)} | ${r.ok ? '✅ PASS' : '❌ FAIL'} | ${cell((r.tools ?? []).join(', '))} | ${cell(r.ok ? '—' : r.reason)} |`,
+      `| ${r.id} ${cell(r.label)} | ${r.slice} | ${r.ok ? '✅ PASS' : '❌ FAIL'} | ${cell((r.tools ?? []).join(', '))} | ${cell(r.reason)} |`,
     );
   }
   lines.push('');
@@ -216,25 +271,23 @@ if (asJson) {
     '> 诚实边界：真模型语义层，结果非确定性、依赖 apikey/服务，不进 `pnpm verify` / CI 阻塞；',
   );
   lines.push('> 未通过 = 模型语义理解缺陷（结合 /api/trace/:runId 人工复核），非链路 bug；');
-  lines.push(
-    '> 非 `/api/demo/semantic` 的 scripted 骨架。确定性评测见 `pnpm eval`，真模型语义亦见 `pnpm demo:semantic:live`。',
-  );
+  lines.push('> gold 由 lib.mjs 独立重算，判据写死、机器可判，非 scripted 骨架、非挑题凑分。');
   lines.push('');
   process.stdout.write(`${lines.join('\n')}\n`);
 } else {
+  for (const [s, v] of Object.entries(bySlice)) {
+    console.log(`  ${s.padEnd(22)} ${v.passed}/${v.total}`);
+  }
+  console.log('');
   for (const r of results) {
-    console.log(`  ${r.ok ? '✅' : '❌'} ${r.id} ${r.label}`);
-    console.log(
-      `      runId=${r.runId ?? '—'} | tools=[${(r.tools ?? []).join(',')}] | text=${(r.text ?? '').slice(0, 80)}`,
-    );
-    if (!r.ok) console.log(`      判据：${r.reason}`);
+    if (r.ok) continue;
+    console.log(`  ❌ ${r.id} [${r.slice}] ${r.label}`);
+    console.log(`      tools=[${(r.tools ?? []).join(',')}] | text=${(r.text ?? '').slice(0, 80)}`);
+    console.log(`      判据：${r.reason}`);
   }
   console.log(`\n真模型语义验证：${passed}/${total} 通过（${(rate * 100).toFixed(1)}%）`);
   console.log(
-    '  说明：LLM 参与决策与评分；判据按 L6 passCriteria 写死（缺企业须追问 / 缺用途内容须追问 / 指代按项目定位）。',
-  );
-  console.log(
-    '        结果非确定性、不进 pnpm verify / CI 阻塞；未通过结合 /api/trace/:runId 人工复核。\n',
+    '  说明：LLM 参与决策与评分；gold 独立重算、判据写死；结果非确定性、不进 verify/CI。\n',
   );
 }
 
