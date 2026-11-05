@@ -23,6 +23,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT } from './lib.mjs';
+import { checkReliance } from './reliance.mjs';
 
 const args = process.argv.slice(2);
 const asJson = args.includes('--json');
@@ -188,18 +189,23 @@ if (!asJson && !asMarkdown) {
 }
 
 /* --------------------------- 逐条真跑 + 机器断言 --------------------------- */
+// 借鉴 Mechanistic Shaping：expression(答案对) 与 reliance(依据可追溯到本轮工具结果)
+// 分开度量；reliance 用已有 trace，零额外 LLM 调用。现有 ok 语义不变（历史可比）。
 const results = [];
 for (const c of cases) {
   const base = {
     id: c.id,
     slice: c.slice,
     label: c.label,
-    ok: false,
+    ok: false, // expression：现有判据（答案/行为对不对）
     reason: '',
     model,
     runId: null,
     tools: [],
     text: '',
+    reliance: 'N/A', // 'ok' | 'fail' | 'N/A'（追问/权限类不适用）
+    relianceReason: '',
+    reliantOk: false, // expression && reliance（"right for the right reasons"）
   };
   try {
     const r = await post('/api/chat', {
@@ -211,22 +217,57 @@ for (const c of cases) {
     const text = r.text ?? '';
     const runId = r.runId ?? null;
     const { ok, reason } = judge(c.spec, { tools, text });
-    results.push({ ...base, ok, reason, runId, tools, text: text.slice(0, 80) });
+
+    // 拉本轮 trace，用工具结果做 reliance 判定（不重跑、零成本）。
+    const trace = runId ? await get(`/api/trace/${encodeURIComponent(runId)}`) : {};
+    const rel = checkReliance(c.spec, trace.toolCalls ?? []);
+    const reliance = rel.applicable ? (rel.ok ? 'ok' : 'fail') : 'N/A';
+    const reliantOk = rel.applicable ? ok && rel.ok : ok; // 追问类沿用 expression
+
+    results.push({
+      ...base,
+      ok,
+      reason,
+      runId,
+      tools,
+      text: text.slice(0, 80),
+      reliance,
+      relianceReason: rel.reason,
+      reliantOk,
+    });
   } catch (e) {
     results.push({ ...base, reason: `单条异常（网络/解析）：${String(e).slice(0, 160)}` });
   }
 }
 
-/* --------------------------- 汇总 --------------------------- */
+/* --------------------------- 汇总（分层） --------------------------- */
 const total = results.length;
-const passed = results.filter((r) => r.ok).length;
+const passed = results.filter((r) => r.ok).length; // expression
 const failed = total - passed;
 const rate = total === 0 ? 0 : passed / total;
+// reliance 只统计 applicable 的数据答案类用例
+const relianceApplicable = results.filter((r) => r.reliance !== 'N/A');
+const reliancePass = relianceApplicable.filter((r) => r.reliance === 'ok').length;
+const reliantPass = results.filter((r) => r.reliantOk).length; // expression ∧ reliance
 const bySlice = {};
 for (const r of results) {
-  if (bySlice[r.slice] === undefined) bySlice[r.slice] = { total: 0, passed: 0 };
-  bySlice[r.slice].total += 1;
-  if (r.ok) bySlice[r.slice].passed += 1;
+  if (bySlice[r.slice] === undefined) {
+    bySlice[r.slice] = {
+      total: 0,
+      passed: 0,
+      relianceApplicable: 0,
+      reliancePass: 0,
+      reliantPass: 0,
+    };
+  }
+  const s = bySlice[r.slice];
+  s.total += 1;
+  if (r.ok) s.passed += 1;
+  if (r.reliance !== 'N/A') {
+    s.relianceApplicable += 1;
+    if (r.reliance === 'ok') s.reliancePass += 1;
+  }
+  if (r.reliantOk) s.reliantPass += 1;
 }
 const summary = {
   mode: 'real-llm-semantic (LLM participates in scoring)',
@@ -235,9 +276,16 @@ const summary = {
   dataset_version: dataset.dataset_version,
   caseset: legacyOnly ? 'legacy-4' : 'generated',
   total,
-  passed,
+  passed, // expression（历史口径，不变）
   failed,
   rate,
+  reliance: {
+    applicable: relianceApplicable.length,
+    passed: reliancePass,
+    rate: relianceApplicable.length ? reliancePass / relianceApplicable.length : 0,
+  },
+  reliantPass, // expression ∧ reliance
+  reliantRate: total ? reliantPass / total : 0,
   by_slice: bySlice,
   results,
 };
@@ -252,42 +300,65 @@ if (asJson) {
     '# 真模型语义评测报告（LLM 参与决策与评分）',
     '',
     `- 模型：\`${model}\` · 服务：\`${BASE}\` · 评测集 \`${dataset.dataset_version}\`（${legacyOnly ? '旧 4 条基线' : `${total} 条生成变体`}）`,
-    `- 结果：**${passed}/${total} 通过（${(rate * 100).toFixed(1)}%）**`,
+    `- **Expression（答案对，历史口径）：${passed}/${total}（${(rate * 100).toFixed(1)}%）**`,
+    `- **Reliance（依据可追溯到本轮工具结果）：${reliancePass}/${summary.reliance.applicable}（${(summary.reliance.rate * 100).toFixed(1)}%）** —— 仅数据答案类适用`,
+    `- **E∧R（答对且依据对 / "right for the right reasons"）：${reliantPass}/${total}（${(summary.reliantRate * 100).toFixed(1)}%）**`,
     '',
-    '| 切片 | 通过/总数 | 通过率 |',
-    '|---|---|---|',
+    '| 切片 | Expression | Reliance(数据类) | E∧R |',
+    '|---|---|---|---|',
   ];
   for (const [s, v] of Object.entries(bySlice)) {
-    lines.push(`| ${s} | ${v.passed}/${v.total} | ${((v.passed / v.total) * 100).toFixed(1)}% |`);
-  }
-  lines.push('', '| 用例 | 切片 | 结果 | 工具 | 判据 |', '|---|---|---|---|---|');
-  for (const r of results) {
     lines.push(
-      `| ${r.id} ${cell(r.label)} | ${r.slice} | ${r.ok ? '✅ PASS' : '❌ FAIL'} | ${cell((r.tools ?? []).join(', '))} | ${cell(r.reason)} |`,
+      `| ${s} | ${v.passed}/${v.total} | ${v.reliancePass}/${v.relianceApplicable} | ${v.reliantPass}/${v.total} |`,
+    );
+  }
+  lines.push(
+    '',
+    '| 用例 | 切片 | Expression | Reliance | 工具 | 判据 |',
+    '|---|---|---|---|---|---|',
+  );
+  for (const r of results) {
+    const relTag = r.reliance === 'N/A' ? '—' : r.reliance === 'ok' ? '✅ 依据对' : '⚠️ 依据缺';
+    lines.push(
+      `| ${r.id} ${cell(r.label)} | ${r.slice} | ${r.ok ? '✅' : '❌'} | ${relTag} | ${cell((r.tools ?? []).join(', '))} | ${cell(r.reason)} |`,
     );
   }
   lines.push('');
   lines.push(
-    '> 诚实边界：真模型语义层，结果非确定性、依赖 apikey/服务，不进 `pnpm verify` / CI 阻塞；',
+    '> 借鉴 Mechanistic Shaping 的 expression ≠ reliance 理念：白盒激活不可得，黑盒等价证据是',
   );
-  lines.push('> 未通过 = 模型语义理解缺陷（结合 /api/trace/:runId 人工复核），非链路 bug；');
-  lines.push('> gold 由 lib.mjs 独立重算，判据写死、机器可判，非 scripted 骨架、非挑题凑分。');
+  lines.push(
+    '> `trace.toolCalls[].result`；reliance 用已有 trace 判定、零额外 LLM 调用。`ok` 语义不变（历史可比）。',
+  );
+  lines.push(
+    '> 诚实边界：真模型语义层非确定性、不进 verify/CI；未通过需结合 /api/trace/:runId 复核；',
+  );
+  lines.push('> gold 由 lib.mjs 独立重算、判据写死，非 scripted 骨架、非挑题凑分。');
   lines.push('');
   process.stdout.write(`${lines.join('\n')}\n`);
 } else {
   for (const [s, v] of Object.entries(bySlice)) {
-    console.log(`  ${s.padEnd(22)} ${v.passed}/${v.total}`);
+    console.log(
+      `  ${s.padEnd(22)} E ${v.passed}/${v.total}  R ${v.reliancePass}/${v.relianceApplicable}  E∧R ${v.reliantPass}/${v.total}`,
+    );
   }
   console.log('');
   for (const r of results) {
-    if (r.ok) continue;
-    console.log(`  ❌ ${r.id} [${r.slice}] ${r.label}`);
-    console.log(`      tools=[${(r.tools ?? []).join(',')}] | text=${(r.text ?? '').slice(0, 80)}`);
-    console.log(`      判据：${r.reason}`);
+    if (r.ok && r.reliance !== 'fail') continue;
+    console.log(`  ${r.ok ? '❌' : '❌'} ${r.id} [${r.slice}] ${r.label}`);
+    console.log(`      tools=[${(r.tools ?? []).join(',')}] | reliance=${r.reliance}`);
+    if (!r.ok) console.log(`      判据：${r.reason}`);
+    if (r.reliance === 'fail') console.log(`      reliance：${r.relianceReason}`);
   }
-  console.log(`\n真模型语义验证：${passed}/${total} 通过（${(rate * 100).toFixed(1)}%）`);
+  console.log(`\nExpression（答案对）：${passed}/${total}（${(rate * 100).toFixed(1)}%）`);
   console.log(
-    '  说明：LLM 参与决策与评分；gold 独立重算、判据写死；结果非确定性、不进 verify/CI。\n',
+    `Reliance（依据可追溯到本轮工具）：${reliancePass}/${summary.reliance.applicable}（${(summary.reliance.rate * 100).toFixed(1)}%，仅数据答案类）`,
+  );
+  console.log(
+    `E∧R（答对且依据对）：${reliantPass}/${total}（${(summary.reliantRate * 100).toFixed(1)}%）`,
+  );
+  console.log(
+    '  说明：借鉴 expression≠reliance；reliance 用已有 trace、零额外 LLM；ok 语义不变。\n',
   );
 }
 

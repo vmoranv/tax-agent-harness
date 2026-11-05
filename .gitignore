@@ -9,6 +9,7 @@ packages/*/dist-test/
 apps/*/tmp-*.mjs
 data/*.mjs
 data/*.txt
+data/*.json
 
 # ─── 运行期产物 ───
 # SQLite 数据库及其 WAL/SHM 边车文件（含临时 golden runner 库，均为生成物）

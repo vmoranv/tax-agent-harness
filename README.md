@@ -167,6 +167,7 @@ pnpm eval:semantic:live:report  # 该评测的 Markdown 报告
 | 集合 IR 指标 | 确定性 `selectApplicableRules` 的 Precision/Recall/F1（P/R/F1 = 100%），非向量 | `pnpm eval` 报告「三」 |
 | 向量检索诊断对照 | 本地确定性哈希嵌入 + 余弦 top-K 的 **P/R/F1 ≈ 58.3%（⚠️ 非评分）**：label leak、版本不可分、不稳健，无质量含义，仅作「若换向量检索会怎样」的结构诊断 | `pnpm eval` 报告「四」 |
 | 真模型语义评测（L6） | **LLM 参与决策与评分**：真实 `agnes-2.5-flash` 跑**程序化生成的 26 条语义变体**（6 切片，v2 已修病句），gold 由 `lib.mjs` 独立重算、判据写死机器可判；实测在 **~77–92% 间随机波动**（修复前 84.6%，病句修复+回复防护后两次 84.6%/92.3%，平均 88.5%；强化 prompt 实测更差已回退）。结果非确定性、需 apikey/服务 | `pnpm eval:semantic:live` / `eval:semantic:gen`（独立，**不进 verify / CI**）|
+| Reliance 监控（理念借鉴）| 借鉴 Mechanistic Shaping 的 **expression ≠ reliance**：白盒激活不可得，黑盒等价证据用 `trace.toolCalls[].result`。评测层把「答案对」(Expression) 与「依据可追溯到本轮工具结果」(Reliance) 分开度量 + `E∧R`；用已有 trace、零额外 LLM、`ok` 历史口径不变。9 个单测；实跑 26 条 E 23/26、R 17/20、E∧R 23/26 | `pnpm eval:semantic:live --json`（`reliance` / `reliantPass` 字段）|
 | Trace 可观测性 | 真实 token 消耗 / 三类 step / 工具耗时 / 单步-累计时序全部落进 `trace_run`（2026-11-05 补齐 4 项缺口；细节见本地 spec，不入库）| `/api/trace/:runId`、Web「运行记录」面板 |
 
 > 诚实边界：`pnpm eval` / `pnpm eval:golden` 都是**确定性管线**，不调用真 LLM；
