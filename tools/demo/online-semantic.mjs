@@ -86,35 +86,67 @@ const SCRIPTED_CASES = [
   },
 ];
 
-/** L6 真模型语义变体（来自 tools/eval/cases/l6-realmodel.mjs）。 */
+/**
+ * L6 真模型语义变体。每个 case 用**显式断言函数**判定，判据写死，避免宽松正则自证：
+ * - check(ctx) 拿到 { tools(工具名数组), text, trace } 返回 { ok, reason }。
+ * - 只有「模型该做的事做对了」才算 PASS；臆测/不追问/指代错一律 FAIL 并给原因。
+ */
 const LIVE_CASES = [
   {
     id: 'T-R-01a',
     label: '换措辞·甲企业九月',
     text: '甲企业九月的发票一共多少？',
     enterpriseId: 'C001',
-    expect: { tool: 'summarize_enterprise_month', literal: '9,622.06' },
+    check: ({ tools, text }) => ({
+      ok: tools.includes('summarize_enterprise_month') && text.includes('9,622.06'),
+      reason: '应调 summarize_enterprise_month 且金额 9,622.06 有溯源',
+    }),
   },
   {
     id: 'T-R-01b',
     label: '换措辞·票面合计',
     text: '帮我看下甲企业 2026 年 9 月的票面合计',
     enterpriseId: 'C001',
-    expect: { tool: 'summarize_enterprise_month', literal: '9,622.06' },
+    check: ({ tools, text }) => ({
+      ok: tools.includes('summarize_enterprise_month') && text.includes('9,622.06'),
+      reason: '应调 summarize_enterprise_month 且金额 9,622.06 有溯源',
+    }),
   },
   {
     id: 'T-R-02a',
-    label: '同句·未指定企业',
+    label: '同句·未指定企业（应追问，不得默认企业）',
     text: '查一下金额',
     enterpriseId: 'C001',
-    expect: { clarify: true },
+    check: ({ tools }) => ({
+      // 赛题 R1：缺企业须追问，不能擅自假设企业直接查询。
+      ok: !tools.some((t) =>
+        [
+          'summarize_enterprise_month',
+          'find_purpose_gaps',
+          'set_invoice_purpose',
+          'set_invoice_remark',
+        ].includes(t),
+      ),
+      reason: '缺企业应追问而非默认 C001；调用业务查询工具即判失败',
+    }),
   },
   {
     id: 'T-R-03',
-    label: '多轮补充·指代消解',
+    label: '多轮补充·指代消解（应追问用途内容，不得臆测写入）',
     text: '把甲企业那张复印纸的发票用途补一下',
     enterpriseId: 'C001',
-    expect: { clarify: true },
+    check: ({ tools, trace }) => {
+      const wrote = tools.includes('set_invoice_purpose');
+      const wroteWrongInvoice = (trace.toolCalls ?? []).some(
+        (c) => c.name === 'set_invoice_purpose' && c.args?.invoiceNo !== 'F002',
+      );
+      return {
+        ok: !wrote, // 未追问用途内容就写入 = 失败
+        reason:
+          '缺「要填的用途内容」须先追问；直接调 set_invoice_purpose 写入即判失败' +
+          (wroteWrongInvoice ? '；且指代错误（复印纸应为 F002 而非所写发票）' : ''),
+      };
+    },
   },
 ];
 
@@ -181,29 +213,27 @@ async function runLive() {
       });
       const tools = (r.steps ?? []).map((s) => s.name ?? s);
       const text = r.text ?? '';
-      let ok;
-      if (c.expect.clarify) {
-        // 追问：模型应要求补充信息，而不是直接臆测写入
-        ok = /请|补|哪|确认|什么|是否/.test(text) || tools.length === 0;
-      } else {
-        ok =
-          tools.includes(c.expect.tool) && (!c.expect.literal || text.includes(c.expect.literal));
-      }
+      const t = await get(`/api/trace/${encodeURIComponent(r.runId)}`);
+      const { ok, reason } = c.check({ tools, text, trace: t });
       console.log(`  ${ok ? '✅' : '❌'} ${c.id} ${c.label}`);
       console.log(
         `      runId=${r.runId} | tools=[${tools.join(',')}] | text=${text.slice(0, 80)}`,
       );
-      const t = await get(`/api/trace/${encodeURIComponent(r.runId)}`);
       console.log(
         `      trace: rules=${(t.context?.rules ?? []).length}, toolCalls=${(t.toolCalls ?? []).length}, provenance=${(t.provenance ?? []).length}`,
       );
+      if (!ok) console.log(`      判据：${reason}`);
       if (ok) pass += 1;
     } catch (e) {
       console.log(`  ❌ ${c.id} ${c.label} — ${String(e).slice(0, 160)}`);
     }
   }
   console.log(`\n真模型语义验证：${pass}/${LIVE_CASES.length} 通过`);
-  console.log('说明：真模型结果不稳定，未通过请结合 trace 人工复核（L6 定位为人工层）。\n');
+  console.log(
+    '说明：判据按 L6 passCriteria 写死（缺企业须追问 / 缺用途内容须追问 / 指代按项目定位）。',
+  );
+  console.log('      未通过 = 模型语义理解缺陷，非链路 bug；结合 /api/trace/:runId 人工复核。');
+  console.log('      这是 L6 真模型层，结果不稳定，不进 CI 阻塞。\n');
   return pass === LIVE_CASES.length;
 }
 
