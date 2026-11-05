@@ -8,6 +8,11 @@
  * dataset.source.json + rules.json + actors.json 独立重算 gold 生成，判据写死在
  * 本文件的 `judge()`，不生成宽松正则、不挑题凑分。
  *
+ * 会话隔离（2026-11-05 修复 data leakage）：每条用例发唯一 `sessionId`，
+ * 让评测请求走独立会话，避免 `session.history` 把过往轮次的正确答案喂给模型
+ * （此前同 (user,enterprise) 共享 session，历史累积数百条含金额回复，模型照抄
+ * 历史不调工具 → 判据与溯源防护双双 FAIL）。在线用户不传 sessionId，默认多轮不变。
+ *
  * 诚实边界：
  *   - 真模型语义层，结果**非确定性**、依赖 apikey 与服务，**不进 `pnpm verify` / CI 阻塞**。
  *   - 不把 `/api/demo/semantic` 的 scripted 骨架当真模型；本 runner 只走 `/api/chat`。
@@ -32,6 +37,9 @@ const legacyOnly = args.includes('--legacy');
 const baseArg = args.find((a) => a.startsWith('--base='));
 const baseFromArg = baseArg ? baseArg.slice('--base='.length).trim() : '';
 const BASE = baseFromArg || process.env.HARNESS_API_BASE || 'http://127.0.0.1:9601';
+// 每次评测运行一个独立命名空间，且每条用例一个 sessionId：彻底隔离多轮历史，
+// 避免过往轮次的答案经 session.history 泄漏给模型（data leakage 修复）。
+const SESSION_NS = `eval-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
 /* --------------------------- HTTP 工具 --------------------------- */
 
@@ -212,6 +220,7 @@ for (const c of cases) {
       text: c.text,
       userId: c.userId,
       enterpriseId: c.enterpriseId,
+      sessionId: `${SESSION_NS}-${c.id}`,
     });
     const tools = (r.steps ?? []).map((s) => s.name ?? s);
     const text = r.text ?? '';

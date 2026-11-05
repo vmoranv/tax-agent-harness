@@ -48,6 +48,15 @@ const BodySchema = z.object({
   text: z.string().min(1).max(MAX_TEXT_LENGTH),
   userId: z.string().regex(/^U\d{3}$/),
   enterpriseId: z.string().regex(/^C\d{3}$/),
+  /**
+   * 可选：显式会话标识。评测 runner 为每条用例传唯一值，避免多轮历史把
+   * 过往轮次的答案喂给模型（data leakage）。不传时沿用 `${uid}-${eid}`
+   * 的默认会话，保持线上正常多轮行为不变。
+   */
+  sessionId: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{1,64}$/)
+    .optional(),
 });
 
 const ScriptTurnSchema = z.union([
@@ -86,10 +95,12 @@ export async function chatRoutes(app: FastifyInstance): Promise<void> {
       return reply.status(400).send(validationError(parsed.error));
     }
 
-    const { text, userId: uid, enterpriseId: eid } = parsed.data;
+    const { text, userId: uid, enterpriseId: eid, sessionId } = parsed.data;
     const runtime = runtimeOf(app);
 
-    const event = new MessageEvent(Umo.of('api', 'http', `${uid}-${eid}`), {
+    // 显式 sessionId 优先（评测隔离）；否则沿用默认会话（线上多轮不变）。
+    const umoSessionId = sessionId ?? `${uid}-${eid}`;
+    const event = new MessageEvent(Umo.of('api', 'http', umoSessionId), {
       userId: userId(uid),
       enterpriseId: enterpriseId(eid),
       text,

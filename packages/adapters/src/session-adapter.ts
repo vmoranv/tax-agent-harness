@@ -7,6 +7,10 @@
  *
  * `sessionKey` 来自 `MessageEvent.umo.toString()`，如 `api:http:U001-C001`；
  * 从中解析 userId / enterpriseId 后落到 (user, enterprise) 隔离的会话上。
+ *
+ * 评测隔离（2026-11-05 修复 data leakage）：`api:http:eval-*` 这类显式会话
+ * 走「无历史」通道 —— history 返回空、append 不落库。评测每条用例不该读到
+ * 过往轮次答案、也不该把答案写进默认会话。在线默认会话行为完全不变。
  */
 
 import type { UnitOfWork } from '@harness/contracts';
@@ -31,6 +35,12 @@ function parseKey(sessionKey: string): { userId: string; enterpriseId: string } 
   };
 }
 
+/** 评测隔离会话：umo sessionId 以 `eval-` 开头（由 /api/chat 的可选 sessionId 注入）。 */
+function isIsolatedEvalSession(sessionKey: string): boolean {
+  const sessionIdPart = sessionKey.slice(sessionKey.lastIndexOf(':') + 1);
+  return sessionIdPart.startsWith('eval-');
+}
+
 export function createSessionAdapter(uow: UnitOfWork): SessionHistoryPort {
   /**
    * 单次事务内完成「找/建会话 + 读写消息」。
@@ -42,6 +52,8 @@ export function createSessionAdapter(uow: UnitOfWork): SessionHistoryPort {
    */
   return {
     async history(sessionKey, limit) {
+      // 评测隔离会话：无历史、不触碰默认 (user,enterprise) 会话。
+      if (isIsolatedEvalSession(sessionKey)) return [];
       const { userId: uid, enterpriseId: eid } = parseKey(sessionKey);
       const nowIso = new Date().toISOString();
       return uow.run(async (tx) => {
@@ -58,6 +70,8 @@ export function createSessionAdapter(uow: UnitOfWork): SessionHistoryPort {
     },
 
     async append(sessionKey, role, content) {
+      // 评测隔离会话：不落库，避免把答案写进默认会话造成后续污染。
+      if (isIsolatedEvalSession(sessionKey)) return;
       const { userId: uid, enterpriseId: eid } = parseKey(sessionKey);
       const nowIso = new Date().toISOString();
       await uow.run(async (tx) => {
