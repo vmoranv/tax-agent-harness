@@ -21,6 +21,7 @@ import { chatRoutes } from './routes/chat.js';
 import { chatStreamRoutes } from './routes/chat-stream.js';
 import { consoleRoutes } from './routes/console.js';
 import { dataRoutes } from './routes/data.js';
+import { demoRoutes } from './routes/demo.js';
 import { evalRoutes } from './routes/eval.js';
 import { integrationRoutes } from './routes/integration.js';
 import { metaRoutes } from './routes/meta.js';
@@ -78,6 +79,7 @@ export async function createServer(): Promise<ReturnType<typeof Fastify>> {
   await app.register(integrationRoutes, { prefix: '/api' });
   await app.register(evalRoutes, { prefix: '/api' });
   await app.register(dataRoutes, { prefix: '/api' });
+  await app.register(demoRoutes, { prefix: '/api' });
 
   app.get('/health', async () => ({
     ok: true,

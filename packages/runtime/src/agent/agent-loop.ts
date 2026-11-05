@@ -134,7 +134,6 @@ export async function runAgentLoop(input: AgentLoopInput): Promise<AgentLoopResu
       // 写操作密集：重试交给「同值 no-op + 乐观锁」，不交给 SDK
       maxRetries: 0,
       onStepEnd: (step) => {
-        if (input.onStepEnd === undefined) return;
         const calls = (step.toolCalls ?? []).map((c) => ({
           id: c.toolCallId,
           name: c.toolName,
@@ -150,6 +149,8 @@ export async function runAgentLoop(input: AgentLoopInput): Promise<AgentLoopResu
           };
         });
 
+        // onStepEnd 是可选回调；但下面的 onToolResult 分发不能依赖它是否存在
+        // —— trace / provenance / SSE 都靠这个回调，缺了会让工具执行「静默」。
         input.onStepEnd?.({
           index: step.stepNumber ?? 0,
           text: step.text ?? '',
@@ -159,7 +160,7 @@ export async function runAgentLoop(input: AgentLoopInput): Promise<AgentLoopResu
           outputTokens: step.usage?.outputTokens ?? 0,
         });
 
-        // 逐次回调工具结果，供 trace 与 provenance 使用
+        // 逐次回调工具结果，供 trace 与 provenance 使用（始终执行）。
         const byId = new Map(calls.map((c) => [c.id, c]));
         for (const r of results) {
           const c = byId.get(r.id);

@@ -1,7 +1,8 @@
 import { enterpriseId, userId } from '@harness/domain';
 import { describe, expect, it } from 'vitest';
 import type { z } from 'zod';
-import { runScripted } from '../src/agent/agent-loop.js';
+import { runAgentLoop, runScripted } from '../src/agent/agent-loop.js';
+import { createScriptedModel } from '../src/agent/scripted-model.js';
 import { assembleContext, estimateTokens } from '../src/context/index.js';
 import { logBroker, redactSecrets, withLogContext } from '../src/log/index.js';
 import {
@@ -98,6 +99,38 @@ describe('explain_rules 权限被拒', () => {
       expect(r.error.code).toBe('ACCESS_DENIED');
       expect(r.error.message).toBe('无权限查看规则');
     }
+  });
+});
+
+describe('runAgentLoop 工具结果分发', () => {
+  it('只传 onToolResult（不传 onStepEnd）时工具结果仍会被回调（trace/provenance 不丢失）', async () => {
+    // 回归：此前 onStepEnd 里有 `if (input.onStepEnd === undefined) return;`，
+    // 而 onToolResult 分发写在它后面 —— executeStage 只传 onToolResult，
+    // 导致工具执行了却「静默」：无 trace.addToolCall / 无 ledger / 金额被溯源抹掉。
+    const script = [
+      [
+        {
+          type: 'tool-call' as const,
+          name: 'summarize_enterprise_month',
+          args: { month: '2026-09' },
+        },
+      ],
+      [{ type: 'text' as const, content: '合计 9,622.06 元' }],
+    ];
+    const got: string[] = [];
+    const result = await runAgentLoop({
+      model: createScriptedModel(script),
+      instructions: '财税助手',
+      messages: [{ role: 'user', content: '查金额' }],
+      tools, // 复用顶部 stubApp 构造的 6 个工具
+      maxSteps: 8,
+      toolContext: { runId: 'r', toolCallId: 'c', userId: 'U001', enterpriseId: 'C001' },
+      // 故意不传 onStepEnd
+      onToolResult: ({ name, ok }) => got.push(`${name}:${ok}`),
+    });
+    expect(result.text).toContain('9,622.06');
+    expect(got.length).toBe(1);
+    expect(got[0]).toContain('summarize_enterprise_month');
   });
 });
 
