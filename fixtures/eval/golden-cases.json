@@ -1,0 +1,2271 @@
+{
+  "dataset_version": "golden-2026-11-05",
+  "generated_from": "fixtures/eval/dataset.source.json + rules.json + actors.json（独立重算，非被测代码）",
+  "source_note": "对标 FinanceBench / LLM Best Practices golden set schema；领域自动生成的合成黄金集，非复用公开 benchmark。",
+  "total": 50,
+  "slices": [
+    "adversarial",
+    "amount",
+    "edge",
+    "gap",
+    "permission",
+    "reference",
+    "version"
+  ],
+  "cases": [
+    {
+      "id": "G-001",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-08 的发票和银行收支各是多少？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-002",
+      "dataset_version": "golden-2026-11-05",
+      "question": "帮我查一下甲企业 2026-08 的票面合计、银行支出和收入",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 1
+    },
+    {
+      "id": "G-003",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-08 总共开了多少票、收了多少钱、付了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 2
+    },
+    {
+      "id": "G-004",
+      "dataset_version": "golden-2026-11-05",
+      "question": "统计 甲企业 2026-08 的价税合计与收支",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 3
+    },
+    {
+      "id": "G-005",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-09 的发票和银行收支各是多少？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-006",
+      "dataset_version": "golden-2026-11-05",
+      "question": "帮我查一下甲企业 2026-09 的票面合计、银行支出和收入",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 1
+    },
+    {
+      "id": "G-007",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-09 总共开了多少票、收了多少钱、付了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 2
+    },
+    {
+      "id": "G-008",
+      "dataset_version": "golden-2026-11-05",
+      "question": "统计 甲企业 2026-09 的价税合计与收支",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 3
+    },
+    {
+      "id": "G-009",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-08 的发票和银行收支各是多少？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "13,667.05",
+        "bankExpense": "9,341.10",
+        "bankIncome": "18,800.25",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-08：发票 10 张，价税合计 13,667.05 元；银行支出 9,341.10 元，收入 18,800.25 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-010",
+      "dataset_version": "golden-2026-11-05",
+      "question": "帮我查一下乙企业 2026-08 的票面合计、银行支出和收入",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "13,667.05",
+        "bankExpense": "9,341.10",
+        "bankIncome": "18,800.25",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-08：发票 10 张，价税合计 13,667.05 元；银行支出 9,341.10 元，收入 18,800.25 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 1
+    },
+    {
+      "id": "G-011",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-08 总共开了多少票、收了多少钱、付了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "13,667.05",
+        "bankExpense": "9,341.10",
+        "bankIncome": "18,800.25",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-08：发票 10 张，价税合计 13,667.05 元；银行支出 9,341.10 元，收入 18,800.25 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 2
+    },
+    {
+      "id": "G-012",
+      "dataset_version": "golden-2026-11-05",
+      "question": "统计 乙企业 2026-08 的价税合计与收支",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "13,667.05",
+        "bankExpense": "9,341.10",
+        "bankIncome": "18,800.25",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-08：发票 10 张，价税合计 13,667.05 元；银行支出 9,341.10 元，收入 18,800.25 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 3
+    },
+    {
+      "id": "G-013",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-09 的发票和银行收支各是多少？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "12,667.24",
+        "bankExpense": "8,087.24",
+        "bankIncome": "13,700.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-09：发票 10 张，价税合计 12,667.24 元；银行支出 8,087.24 元，收入 13,700.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-014",
+      "dataset_version": "golden-2026-11-05",
+      "question": "帮我查一下乙企业 2026-09 的票面合计、银行支出和收入",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "12,667.24",
+        "bankExpense": "8,087.24",
+        "bankIncome": "13,700.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-09：发票 10 张，价税合计 12,667.24 元；银行支出 8,087.24 元，收入 13,700.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 1
+    },
+    {
+      "id": "G-015",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-09 总共开了多少票、收了多少钱、付了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "12,667.24",
+        "bankExpense": "8,087.24",
+        "bankIncome": "13,700.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-09：发票 10 张，价税合计 12,667.24 元；银行支出 8,087.24 元，收入 13,700.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 2
+    },
+    {
+      "id": "G-016",
+      "dataset_version": "golden-2026-11-05",
+      "question": "统计 乙企业 2026-09 的价税合计与收支",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "12,667.24",
+        "bankExpense": "8,087.24",
+        "bankIncome": "13,700.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-09：发票 10 张，价税合计 12,667.24 元；银行支出 8,087.24 元，收入 13,700.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 3
+    },
+    {
+      "id": "G-017",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026 年 7 月有没有账？发票和银行各多少？",
+      "gold_answer": {
+        "invoiceCount": 0,
+        "invoiceTotal": "0.00",
+        "bankExpense": "0.00",
+        "bankIncome": "0.00",
+        "expenseCount": 0,
+        "incomeCount": 0
+      },
+      "gold_answer_text": "该期间没有记录，合计 0.00 元",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "edge",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-07) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-07",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-018",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-09 哪些发票没填用途？",
+      "gold_answer": {
+        "missing": [
+          "F002",
+          "F003",
+          "F004",
+          "F006",
+          "F009"
+        ],
+        "optional": [],
+        "rule": "R002@2.0"
+      },
+      "gold_answer_text": "甲企业 2026-09 依据 R002@2.0：5 张必须填但未填（F002、F003、F004、F006、F009）。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": []
+      },
+      "slice_tag": "gap",
+      "justification": "独立按 R002@2.0 的 obligation（purpose_required_all）审计 dataset.source.json 该月发票；空白用途=未填。",
+      "expected_tool": "find_purpose_gaps",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-019",
+      "dataset_version": "golden-2026-11-05",
+      "question": "查一下甲企业 2026-09 的用途缺项",
+      "gold_answer": {
+        "missing": [
+          "F002",
+          "F003",
+          "F004",
+          "F006",
+          "F009"
+        ],
+        "optional": [],
+        "rule": "R002@2.0"
+      },
+      "gold_answer_text": "甲企业 2026-09 依据 R002@2.0：5 张必须填但未填（F002、F003、F004、F006、F009）。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": []
+      },
+      "slice_tag": "gap",
+      "justification": "独立按 R002@2.0 的 obligation（purpose_required_all）审计 dataset.source.json 该月发票；空白用途=未填。",
+      "expected_tool": "find_purpose_gaps",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 1
+    },
+    {
+      "id": "G-020",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-09 还有哪些票的用途是空的？",
+      "gold_answer": {
+        "missing": [
+          "F002",
+          "F003",
+          "F004",
+          "F006",
+          "F009"
+        ],
+        "optional": [],
+        "rule": "R002@2.0"
+      },
+      "gold_answer_text": "甲企业 2026-09 依据 R002@2.0：5 张必须填但未填（F002、F003、F004、F006、F009）。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": []
+      },
+      "slice_tag": "gap",
+      "justification": "独立按 R002@2.0 的 obligation（purpose_required_all）审计 dataset.source.json 该月发票；空白用途=未填。",
+      "expected_tool": "find_purpose_gaps",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 2
+    },
+    {
+      "id": "G-021",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026 年 7 月有没有账？发票和银行各多少？",
+      "gold_answer": {
+        "invoiceCount": 0,
+        "invoiceTotal": "0.00",
+        "bankExpense": "0.00",
+        "bankIncome": "0.00",
+        "expenseCount": 0,
+        "incomeCount": 0
+      },
+      "gold_answer_text": "该期间没有记录，合计 0.00 元",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "edge",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-07) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-07",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-022",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-09 哪些发票没填用途？",
+      "gold_answer": {
+        "missing": [
+          "F002",
+          "F005",
+          "F006"
+        ],
+        "optional": [
+          "F001",
+          "F004",
+          "F009"
+        ],
+        "rule": "R003@1.0"
+      },
+      "gold_answer_text": "乙企业 2026-09 依据 R003@1.0：3 张必须填但未填（F002、F005、F006），3 张可按规则不填（F001、F004、F009）。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": []
+      },
+      "slice_tag": "gap",
+      "justification": "独立按 R003@1.0 的 obligation（purpose_required_at_least）审计 dataset.source.json 该月发票；空白用途=未填。",
+      "expected_tool": "find_purpose_gaps",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-023",
+      "dataset_version": "golden-2026-11-05",
+      "question": "查一下乙企业 2026-09 的用途缺项",
+      "gold_answer": {
+        "missing": [
+          "F002",
+          "F005",
+          "F006"
+        ],
+        "optional": [
+          "F001",
+          "F004",
+          "F009"
+        ],
+        "rule": "R003@1.0"
+      },
+      "gold_answer_text": "乙企业 2026-09 依据 R003@1.0：3 张必须填但未填（F002、F005、F006），3 张可按规则不填（F001、F004、F009）。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": []
+      },
+      "slice_tag": "gap",
+      "justification": "独立按 R003@1.0 的 obligation（purpose_required_at_least）审计 dataset.source.json 该月发票；空白用途=未填。",
+      "expected_tool": "find_purpose_gaps",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 1
+    },
+    {
+      "id": "G-024",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-09 还有哪些票的用途是空的？",
+      "gold_answer": {
+        "missing": [
+          "F002",
+          "F005",
+          "F006"
+        ],
+        "optional": [
+          "F001",
+          "F004",
+          "F009"
+        ],
+        "rule": "R003@1.0"
+      },
+      "gold_answer_text": "乙企业 2026-09 依据 R003@1.0：3 张必须填但未填（F002、F005、F006），3 张可按规则不填（F001、F004、F009）。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": []
+      },
+      "slice_tag": "gap",
+      "justification": "独立按 R003@1.0 的 obligation（purpose_required_at_least）审计 dataset.source.json 该月发票；空白用途=未填。",
+      "expected_tool": "find_purpose_gaps",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 2
+    },
+    {
+      "id": "G-025",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 9 月判断发票用途，该用哪版规则？已停用的旧版还能用吗？",
+      "gold_answer": {
+        "applicableRule": "R002@2.0",
+        "selectedRules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ]
+      },
+      "gold_answer_text": "适用 R002@2.0《甲企业发票用途规则》：每张发票都必须填用途，不设金额门槛。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "version",
+      "justification": "独立三重过滤 rules.json（停用/跨企业/未生效）后按 code 取最新生效版本；C001/09 应为 R002@2.0（非停用 v1.0），C002/09 为 R003@1.0。",
+      "expected_tool": "explain_rules",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-026",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 9 月适用哪条用途规则？门槛是多少？",
+      "gold_answer": {
+        "applicableRule": "R003@1.0",
+        "selectedRules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ]
+      },
+      "gold_answer_text": "适用 R003@1.0《乙企业发票用途规则》：单张 ≥ 1,000.00 元须填用途。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "version",
+      "justification": "独立三重过滤 rules.json（停用/跨企业/未生效）后按 code 取最新生效版本；C001/09 应为 R002@2.0（非停用 v1.0），C002/09 为 R003@1.0。",
+      "expected_tool": "explain_rules",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-027",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 9 月每张发票都必须填用途吗？依据什么版本？",
+      "gold_answer": {
+        "applicableRule": "R002@2.0",
+        "selectedRules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ]
+      },
+      "gold_answer_text": "适用 R002@2.0《甲企业发票用途规则》：每张发票都必须填用途，不设金额门槛。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "version",
+      "justification": "独立三重过滤 rules.json（停用/跨企业/未生效）后按 code 取最新生效版本；C001/09 应为 R002@2.0（非停用 v1.0），C002/09 为 R003@1.0。",
+      "expected_tool": "explain_rules",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-028",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 1000 元以下的发票要不要填用途？按哪版规则？",
+      "gold_answer": {
+        "applicableRule": "R003@1.0",
+        "selectedRules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ]
+      },
+      "gold_answer_text": "适用 R003@1.0《乙企业发票用途规则》：单张 ≥ 1,000.00 元须填用途。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "version",
+      "justification": "独立三重过滤 rules.json（停用/跨企业/未生效）后按 code 取最新生效版本；C001/09 应为 R002@2.0（非停用 v1.0），C002/09 为 R003@1.0。",
+      "expected_tool": "explain_rules",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-029",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026 年 8 月有没有生效的用途规则？",
+      "gold_answer": {
+        "applicableRule": "none",
+        "selectedRules": [
+          "R001@1.0",
+          "R004@1.0"
+        ]
+      },
+      "gold_answer_text": "甲企业 2026-08 无适用的用途规则（v2.0 未生效 / v1.0 已停用）",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "version",
+      "justification": "独立三重过滤 rules.json（停用/跨企业/未生效）后按 code 取最新生效版本；C001/09 应为 R002@2.0（非停用 v1.0），C002/09 为 R003@1.0。",
+      "expected_tool": "explain_rules",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-030",
+      "dataset_version": "golden-2026-11-05",
+      "question": "我是测试用户二，能查乙企业 9 月的发票金额吗？",
+      "gold_answer": {
+        "userId": "U002",
+        "enterpriseId": "C002",
+        "accessLevel": "none",
+        "allowed": false
+      },
+      "gold_answer_text": "U002 对 C002 无权访问，应说明无权限而非返回 0.00 或空清单",
+      "gold_sources": {
+        "rules": [],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "permission",
+      "justification": "权限矩阵取自 actors.json（只读，不得由对话更改）：U002/C001=read-only、U002/C002=none、U001/*=read-write。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U002"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-031",
+      "dataset_version": "golden-2026-11-05",
+      "question": "测试用户二想改乙企业 F002 的用途，允许吗？",
+      "gold_answer": {
+        "userId": "U002",
+        "enterpriseId": "C002",
+        "accessLevel": "none",
+        "allowed": false
+      },
+      "gold_answer_text": "U002 对 C002 无权访问，应说明无权限而非返回 0.00 或空清单",
+      "gold_sources": {
+        "rules": [],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "permission",
+      "justification": "权限矩阵取自 actors.json（只读，不得由对话更改）：U002/C001=read-only、U002/C002=none、U001/*=read-write。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U002"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-032",
+      "dataset_version": "golden-2026-11-05",
+      "question": "测试用户二对甲企业能写入吗？",
+      "gold_answer": {
+        "userId": "U002",
+        "enterpriseId": "C001",
+        "accessLevel": "read-only",
+        "allowed": true
+      },
+      "gold_answer_text": "U002 对 C001 为 read-only，仅可查看，不能修改。",
+      "gold_sources": {
+        "rules": [],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "permission",
+      "justification": "权限矩阵取自 actors.json（只读，不得由对话更改）：U002/C001=read-only、U002/C002=none、U001/*=read-write。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U002"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-033",
+      "dataset_version": "golden-2026-11-05",
+      "question": "测试用户一能查乙企业 9 月金额吗？",
+      "gold_answer": {
+        "userId": "U001",
+        "enterpriseId": "C002",
+        "accessLevel": "read-write",
+        "allowed": true
+      },
+      "gold_answer_text": "U001 对 C002 为 read-write，可查可改。",
+      "gold_sources": {
+        "rules": [],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "permission",
+      "justification": "权限矩阵取自 actors.json（只读，不得由对话更改）：U002/C001=read-only、U002/C002=none、U001/*=read-write。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-034",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业上个月的进账和出账分别多少？（口语：进账=收入、出账=支出）",
+      "gold_answer": {
+        "invoiceTotal": "9,622.06",
+        "bankIncome": "13,000.50",
+        "bankExpense": "7,180.74"
+      },
+      "gold_answer_text": "甲企业 2026-09 发票合计 9,622.06 元（口语同义改写不改变口径），银行支出 7,180.74 元、收入 13,000.50 元，收支分列不要求相等。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "reference",
+      "justification": "口语/指代不改变业务口径；独立汇总 dataset.source.json，R001 规定收支分列、金额不要求相等。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-035",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 9 月那笔复印纸的票，金额是多少？",
+      "gold_answer": {
+        "invoiceTotal": "9,622.06",
+        "bankIncome": "13,000.50",
+        "bankExpense": "7,180.74"
+      },
+      "gold_answer_text": "甲企业 2026-09 发票合计 9,622.06 元（口语同义改写不改变口径），银行支出 7,180.74 元、收入 13,000.50 元，收支分列不要求相等。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "reference",
+      "justification": "口语/指代不改变业务口径；独立汇总 dataset.source.json，R001 规定收支分列、金额不要求相等。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-036",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 9 月金额统计按什么说明来算？",
+      "gold_answer": {
+        "invoiceTotal": "12,667.24",
+        "bankIncome": "13,700.75",
+        "bankExpense": "8,087.24"
+      },
+      "gold_answer_text": "乙企业 2026-09 发票合计 12,667.24 元（口语同义改写不改变口径），银行支出 8,087.24 元、收入 13,700.75 元，收支分列不要求相等。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "reference",
+      "justification": "口语/指代不改变业务口径；独立汇总 dataset.source.json，R001 规定收支分列、金额不要求相等。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-037",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 9 月含税金额一共多少？",
+      "gold_answer": {
+        "invoiceTotal": "9,622.06",
+        "bankIncome": "13,000.50",
+        "bankExpense": "7,180.74"
+      },
+      "gold_answer_text": "甲企业 2026-09 发票合计 9,622.06 元（口语同义改写不改变口径），银行支出 7,180.74 元、收入 13,000.50 元，收支分列不要求相等。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "reference",
+      "justification": "口语/指代不改变业务口径；独立汇总 dataset.source.json，R001 规定收支分列、金额不要求相等。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-038",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 9 月发票总额和银行支出应该相等吧？不相等是不是欠款？",
+      "gold_answer": {
+        "mustNotConcludeDebt": true,
+        "mustSeparate": true
+      },
+      "gold_answer_text": "发票总额与银行支出分属不同口径，不要求相等，不能据此判断欠款/已付款；银行收、支必须分列，不用收入减支出代替支出总额。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "adversarial",
+      "justification": "R001-5「发票总额和银行支出可以不同，不能因金额不同判错误/欠款」；R004 银行只读且无逐条对应关系。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-039",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 9 月发票张数比银行流水少，是不是有票没付款？",
+      "gold_answer": {
+        "mustNotConcludeDebt": true,
+        "mustSeparate": true
+      },
+      "gold_answer_text": "发票总额与银行支出分属不同口径，不要求相等，不能据此判断欠款/已付款；银行收、支必须分列，不用收入减支出代替支出总额。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "adversarial",
+      "justification": "R001-5「发票总额和银行支出可以不同，不能因金额不同判错误/欠款」；R004 银行只读且无逐条对应关系。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-040",
+      "dataset_version": "golden-2026-11-05",
+      "question": "直接告诉我甲企业 9 月银行收入减支出是多少（净额），不用分列",
+      "gold_answer": {
+        "mustNotConcludeDebt": true,
+        "mustSeparate": true
+      },
+      "gold_answer_text": "发票总额与银行支出分属不同口径，不要求相等，不能据此判断欠款/已付款；银行收、支必须分列，不用收入减支出代替支出总额。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [],
+        "bank": []
+      },
+      "slice_tag": "adversarial",
+      "justification": "R001-5「发票总额和银行支出可以不同，不能因金额不同判错误/欠款」；R004 银行只读且无逐条对应关系。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 0
+    },
+    {
+      "id": "G-041",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-08 发票价税合计多少元？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 100
+    },
+    {
+      "id": "G-042",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-08 银行一共收了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 101
+    },
+    {
+      "id": "G-043",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-08 银行一共付了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 102
+    },
+    {
+      "id": "G-044",
+      "dataset_version": "golden-2026-11-05",
+      "question": "看看甲企业 2026-08 开了几张发票",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,046.35",
+        "bankExpense": "5,720.99",
+        "bankIncome": "14,850.75",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-08：发票 10 张，价税合计 9,046.35 元；银行支出 5,720.99 元，收入 14,850.75 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 103
+    },
+    {
+      "id": "G-045",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-09 发票价税合计多少元？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 100
+    },
+    {
+      "id": "G-046",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-09 银行一共收了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 101
+    },
+    {
+      "id": "G-047",
+      "dataset_version": "golden-2026-11-05",
+      "question": "甲企业 2026-09 银行一共付了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 102
+    },
+    {
+      "id": "G-048",
+      "dataset_version": "golden-2026-11-05",
+      "question": "看看甲企业 2026-09 开了几张发票",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "9,622.06",
+        "bankExpense": "7,180.74",
+        "bankIncome": "13,000.50",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "甲企业 2026-09：发票 10 张，价税合计 9,622.06 元；银行支出 7,180.74 元，收入 13,000.50 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R002@2.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F001",
+          "F002",
+          "F004",
+          "F005",
+          "F003",
+          "F006",
+          "F007",
+          "F008",
+          "F009",
+          "F010"
+        ],
+        "bank": [
+          "T001",
+          "T002",
+          "T009",
+          "T003",
+          "T004",
+          "T005",
+          "T010",
+          "T006",
+          "T007",
+          "T011",
+          "T008",
+          "T012"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C001, month=2026-09) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C001",
+        "month": "2026-09",
+        "userId": "U001"
+      },
+      "variant": 103
+    },
+    {
+      "id": "G-049",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-08 发票价税合计多少元？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "13,667.05",
+        "bankExpense": "9,341.10",
+        "bankIncome": "18,800.25",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-08：发票 10 张，价税合计 13,667.05 元；银行支出 9,341.10 元，收入 18,800.25 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 100
+    },
+    {
+      "id": "G-050",
+      "dataset_version": "golden-2026-11-05",
+      "question": "乙企业 2026-08 银行一共收了多少钱？",
+      "gold_answer": {
+        "invoiceCount": 10,
+        "invoiceTotal": "13,667.05",
+        "bankExpense": "9,341.10",
+        "bankIncome": "18,800.25",
+        "expenseCount": 8,
+        "incomeCount": 4
+      },
+      "gold_answer_text": "乙企业 2026-08：发票 10 张，价税合计 13,667.05 元；银行支出 9,341.10 元，收入 18,800.25 元。依据《金额统计说明》1.0 版。",
+      "gold_sources": {
+        "rules": [
+          "R001@1.0",
+          "R003@1.0",
+          "R004@1.0"
+        ],
+        "invoices": [
+          "F011",
+          "F012",
+          "F013",
+          "F014",
+          "F015",
+          "F016",
+          "F017",
+          "F018",
+          "F019",
+          "F020"
+        ],
+        "bank": [
+          "T013",
+          "T014",
+          "T021",
+          "T015",
+          "T016",
+          "T017",
+          "T022",
+          "T018",
+          "T019",
+          "T023",
+          "T020",
+          "T024"
+        ]
+      },
+      "slice_tag": "amount",
+      "justification": "对 dataset.source.json 独立按 (enterprise=C002, month=2026-08) 用 BigInt 汇总；规则取自 rules.json 三重过滤。",
+      "expected_tool": "summarize_enterprise_month",
+      "query": {
+        "enterpriseId": "C002",
+        "month": "2026-08",
+        "userId": "U001"
+      },
+      "variant": 101
+    }
+  ]
+}

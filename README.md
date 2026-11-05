@@ -166,17 +166,19 @@ pnpm dep:check    # 仅架构依赖检查
 pnpm eval         # 仅评测中台（244 例，L1–L7）
 pnpm eval:cov     # 仅覆盖率门禁（REQ 18/18，INV 22/22）
 pnpm eval:report  # 生成 Markdown 报告
+pnpm eval:golden  # 标准黄金评测集（50 条，retrieval/answer 分开计分）
 ```
 
 ### 测试与评测体系说明
 
-本项目有**两套相互独立、主题有重叠**的验证体系，二者**不重复计数**，
+本项目有**三套相互独立、主题有重叠**的验证体系，三者**不重复计数**，
 不能把两边的数字相加当成「总测试数」：
 
 | 体系 | 规模（大致） | 定位 | 运行方式 |
 |---|---|---|---|
 | vitest 单测 | 22 个测试文件、约 315 个 `it()` 块（`pnpm test` 报 25 files / 364 tests，含嵌套用例与 dist-test 副本） | 本地 / CI 快速回归，覆盖各包的函数级行为 | `pnpm test` |
 | eval 评测中台 | 244 例（L1–L7），当前 240 PASS、4 MANUAL | 面向评委的可核对证据，基于确定性真值（整数分、数据库状态、工具轨迹）做全链路断言 | `pnpm eval` |
+| golden 黄金评测集 | 50 条、7 切片、版本冻结（`fixtures/eval/golden-cases.json`） | 对标业界 50-200 条标准黄金集：`question + gold_answer + gold_sources + slice_tag`，retrieval/answer 分开计分；gold 由独立重算生成，非被测代码 | `pnpm eval:golden` / `pnpm eval:golden:gen` |
 
 两套体系在 `Money.parse`、规则选择（RuleSelector）等行为上**各写了一遍断言**
 （如 `packages/domain/test/money.test.ts` / `rule-selector.test.ts` 对应 eval 的

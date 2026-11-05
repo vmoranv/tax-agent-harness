@@ -11,10 +11,13 @@ data/*.mjs
 data/*.txt
 
 # ─── 运行期产物 ───
-# SQLite 数据库及其 WAL/SHM 边车文件（各测试/演示库均为生成物）
+# SQLite 数据库及其 WAL/SHM 边车文件（含临时 golden runner 库，均为生成物）
 data/**/*.db
+data/*.db
 data/**/*.db-wal
+data/*.db-wal
 data/**/*.db-shm
+data/*.db-shm
 artifacts/
 # 本地运行产物目录兜底（data/runtime 及其余测试库目录）
 data/*/
