@@ -1,0 +1,34 @@
+{
+  "name": "@harness/runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "4.0.96",
+    "@ai-sdk/google": "4.0.111",
+    "@ai-sdk/openai": "4.0.106",
+    "@ai-sdk/openai-compatible": "3.0.82",
+    "@ai-sdk/provider": "4.0.35",
+    "@harness/application": "workspace:*",
+    "@harness/contracts": "workspace:*",
+    "@harness/domain": "workspace:*",
+    "ai": "7.0.159",
+    "zod": "4.6.7"
+  }
+}

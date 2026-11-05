@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    // AI SDK v7 的 Tool 泛型在 exactOptionalPropertyTypes 下
+    // 会推出 `never`，与本项目的严格配置冲突。这是 SDK 的类型限制，
+    // 不是本项目的类型缺陷，因此在本包单独关闭。
+    "exactOptionalPropertyTypes": false,
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": ["src/**/*.ts"]
+}
